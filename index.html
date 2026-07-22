@@ -262,16 +262,16 @@
         }
 
         /* ============================================================
-           CV TEMPLATE STYLES (for preview & PDF)
+           NEW COMPACT CV TEMPLATE (same for preview and PDF)
            ============================================================ */
         .cv-template {
             font-family: Arial, Helvetica, sans-serif;
-            font-size: 14px;
+            font-size: 13px;
             color: #222;
-            line-height: 1.6;
+            line-height: 1.5;
             max-width: 800px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 15px;
             background: #fff;
         }
         .cv-header {
@@ -279,60 +279,70 @@
             justify-content: space-between;
             align-items: flex-start;
             border-bottom: 2px solid #000;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
         }
         .cv-header-left {
             flex: 1;
         }
         .cv-name {
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 700;
             margin: 0;
         }
         .cv-title {
-            font-size: 14px;
+            font-size: 13px;
             text-transform: uppercase;
             color: #555;
             margin: 2px 0;
         }
         .cv-contact {
-            font-size: 12px;
-            margin-top: 4px;
+            font-size: 11px;
+            margin-top: 2px;
         }
         .cv-contact span {
             display: inline-block;
-            margin-right: 16px;
+            margin-right: 12px;
         }
         .cv-photo {
-            width: 100px;
-            height: 100px;
+            width: 90px;
+            height: 90px;
             border-radius: 50%;
             object-fit: cover;
             border: 2px solid #ccc;
             flex-shrink: 0;
-            margin-left: 20px;
+            margin-left: 15px;
         }
         .cv-section {
-            margin-bottom: 25px;
+            margin-bottom: 15px;
         }
         .cv-section h2 {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 700;
             text-transform: uppercase;
             border-bottom: 2px solid #000;
-            padding-bottom: 5px;
-            margin-bottom: 10px;
+            padding-bottom: 3px;
+            margin-bottom: 8px;
         }
         .cv-section.netcampus h2 {
             border-bottom-color: #F97316;
             color: #F97316;
         }
-        .cv-item {
-            margin-bottom: 12px;
+
+        /* Two‑column layout for details */
+        .cv-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px 20px;
+            margin-bottom: 4px;
+        }
+        .cv-row .cv-item {
+            margin-bottom: 2px;
         }
         .cv-item-title {
             font-weight: 700;
+            display: inline-block;
+            min-width: 100px;
         }
         .cv-item-date {
             float: right;
@@ -342,20 +352,21 @@
             font-weight: 600;
             color: #333;
         }
-        .cv-item-details {
-            margin: 4px 0 0 0;
-            padding-left: 20px;
-        }
-        .cv-item-details li {
-            list-style-type: disc;
-        }
         ul {
-            margin: 5px 0 0 20px;
+            margin: 2px 0 0 20px;
             padding: 0;
+        }
+        ul li {
+            list-style-type: disc;
+            margin-bottom: 1px;
         }
         .cv-empty {
             color: #94a3b8;
             font-style: italic;
+        }
+        .cv-item-details {
+            margin: 2px 0 0 0;
+            padding-left: 20px;
         }
 
         /* ----- TOAST ----- */
@@ -398,7 +409,8 @@
             .form-row { grid-template-columns: 1fr; }
             .cv-header { flex-direction: column; align-items: stretch; }
             .cv-photo { margin-left: 0; margin-top: 12px; }
-            .cv-name { font-size: 24px; }
+            .cv-name { font-size: 22px; }
+            .cv-row { grid-template-columns: 1fr; }
         }
         @media print {
             .form-panel, .pdf-actions { display: none; }
@@ -427,9 +439,7 @@ APP WRAPPER
 
         <form id="cvForm" novalidate>
 
-            <!-- ==========================================
-            A. PERSONAL DETAILS
-            ========================================== -->
+            <!-- A. PERSONAL DETAILS -->
             <div class="form-section">
                 <h2>A. Personal Details</h2>
                 <div class="form-row">
@@ -533,9 +543,7 @@ APP WRAPPER
                 </div>
             </div>
 
-            <!-- ==========================================
-            B. HIGH SCHOOL CERTIFICATE
-            ========================================== -->
+            <!-- B. HIGH SCHOOL CERTIFICATE -->
             <div class="form-section">
                 <h2>B. High School Certificate</h2>
                 <div class="form-row">
@@ -564,9 +572,7 @@ APP WRAPPER
                 </div>
             </div>
 
-            <!-- ==========================================
-            C. TERTIARY QUALIFICATIONS (Repeater)
-            ========================================== -->
+            <!-- C. TERTIARY QUALIFICATIONS -->
             <div class="form-section">
                 <h2>C. Tertiary Qualifications</h2>
                 <div id="tertiaryContainer" class="repeater-container"></div>
@@ -575,9 +581,7 @@ APP WRAPPER
                 </div>
             </div>
 
-            <!-- ==========================================
-            D. CURRENT STUDIES (Netcampus)
-            ========================================== -->
+            <!-- D. CURRENT STUDIES (Netcampus) -->
             <div class="form-section">
                 <h2>D. Current Studies <span style="color:#F97316;font-size:13px;">(Netcampus)</span></h2>
                 <div class="form-row">
@@ -602,9 +606,7 @@ APP WRAPPER
                 </div>
             </div>
 
-            <!-- ==========================================
-            E. WORK EXPERIENCE (Repeater)
-            ========================================== -->
+            <!-- E. WORK EXPERIENCE -->
             <div class="form-section">
                 <h2>E. Work Experience</h2>
                 <div id="workContainer" class="repeater-container"></div>
@@ -613,9 +615,7 @@ APP WRAPPER
                 </div>
             </div>
 
-            <!-- ==========================================
-            F. REFERENCES (Repeater) – 2 defaults
-            ========================================== -->
+            <!-- F. REFERENCES -->
             <div class="form-section">
                 <h2>F. References</h2>
                 <div id="refContainer" class="repeater-container"></div>
@@ -624,9 +624,7 @@ APP WRAPPER
                 </div>
             </div>
 
-            <!-- ==========================================
-            PROFESSIONAL SUMMARY
-            ========================================== -->
+            <!-- PROFESSIONAL SUMMARY -->
             <div class="form-section">
                 <h2>Professional Summary</h2>
                 <div class="form-row single">
@@ -637,9 +635,7 @@ APP WRAPPER
                 </div>
             </div>
 
-            <!-- ==========================================
-            SKILLS
-            ========================================== -->
+            <!-- SKILLS -->
             <div class="form-section">
                 <h2>Skills</h2>
                 <div class="form-row single">
@@ -659,9 +655,9 @@ APP WRAPPER
     <div class="preview-panel" id="previewPanel">
         <h2>📋 CV Preview</h2>
 
-        <!-- ===== CV TEMPLATE ===== -->
         <div id="cvPreview" class="cv-template">
-            <!-- Header -->
+
+            <!-- HEADER -->
             <div class="cv-header">
                 <div class="cv-header-left">
                     <div class="cv-name" id="previewName">Your Full Name</div>
@@ -676,53 +672,57 @@ APP WRAPPER
                 <div id="previewPhotoPlaceholder" class="cv-photo" style="display:flex;align-items:center;justify-content:center;background:#f1f5f9;color:#94a3b8;font-size:12px;">📷</div>
             </div>
 
-            <!-- Professional Summary -->
+            <!-- PROFESSIONAL SUMMARY -->
             <div class="cv-section" id="previewSummarySection">
                 <h2>Professional Summary</h2>
-                <p id="previewSummaryText" class="cv-empty">Add a professional summary in the form.</p>
+                <p id="previewSummaryText" class="cv-empty">Add a professional summary.</p>
             </div>
 
-            <!-- Personal Details -->
-            <div class="cv-section" id="previewPersonalSection">
-                <h2>Personal Details</h2>
-                <div id="previewPersonalDetails"><p class="cv-empty">Fill in your personal details.</p></div>
+            <!-- PERSONAL DETAILS + HIGH SCHOOL (two‑column) -->
+            <div class="cv-section">
+                <h2>Personal Details &amp; Education</h2>
+                <div class="cv-row">
+                    <div>
+                        <div id="previewPersonalDetails"><p class="cv-empty">Fill in your personal details.</p></div>
+                    </div>
+                    <div>
+                        <div id="previewHighSchool"><p class="cv-empty">No high school details.</p></div>
+                    </div>
+                </div>
             </div>
 
-            <!-- High School -->
-            <div class="cv-section" id="previewHighSchoolSection">
-                <h2>High School Certificate</h2>
-                <div id="previewHighSchool"><p class="cv-empty">No high school details added.</p></div>
-            </div>
-
-            <!-- Tertiary Qualifications -->
+            <!-- TERTIARY QUALIFICATIONS -->
             <div class="cv-section" id="previewTertiarySection">
                 <h2>Tertiary Qualifications</h2>
-                <div id="previewTertiaryList"><p class="cv-empty">No tertiary qualifications added.</p></div>
+                <div id="previewTertiaryList"><p class="cv-empty">None added.</p></div>
             </div>
 
-            <!-- Current Studies (Netcampus) -->
+            <!-- CURRENT STUDIES (Netcampus) -->
             <div class="cv-section netcampus" id="previewNetcampusSection">
                 <h2>Current Studies</h2>
-                <div id="previewNetcampusContent"><p class="cv-empty">No current studies added.</p></div>
+                <div id="previewNetcampusContent"><p class="cv-empty">No current studies.</p></div>
             </div>
 
-            <!-- Work Experience -->
+            <!-- WORK EXPERIENCE -->
             <div class="cv-section" id="previewWorkSection">
                 <h2>Work Experience</h2>
                 <div id="previewWorkList"><p class="cv-empty">No work experience added.</p></div>
             </div>
 
-            <!-- Skills -->
-            <div class="cv-section" id="previewSkillsSection">
-                <h2>Skills</h2>
-                <p id="previewSkillsText" class="cv-empty">Add skills in the form.</p>
+            <!-- SKILLS & REFERENCES (two‑column) -->
+            <div class="cv-section">
+                <div class="cv-row">
+                    <div>
+                        <h2 style="font-size:14px;font-weight:700;text-transform:uppercase;border-bottom:2px solid #000;padding-bottom:3px;margin-bottom:8px;">Skills</h2>
+                        <p id="previewSkillsText" class="cv-empty">Add skills.</p>
+                    </div>
+                    <div>
+                        <h2 style="font-size:14px;font-weight:700;text-transform:uppercase;border-bottom:2px solid #000;padding-bottom:3px;margin-bottom:8px;">References</h2>
+                        <div id="previewRefList"><p class="cv-empty">No references added.</p></div>
+                    </div>
+                </div>
             </div>
 
-            <!-- References -->
-            <div class="cv-section" id="previewRefSection">
-                <h2>References</h2>
-                <div id="previewRefList"><p class="cv-empty">No references added.</p></div>
-            </div>
         </div>
 
         <!-- PDF Actions -->
@@ -843,7 +843,7 @@ SCRIPTS
     }
 
     /* ============================================================
-    PHOTO HANDLING (client-side only)
+    PHOTO HANDLING
     ============================================================ */
     photoInput.addEventListener('change', function(e) {
         const file = this.files[0];
@@ -898,7 +898,7 @@ SCRIPTS
     }
 
     /* ============================================================
-    RENDER REPEATERS
+    RENDER REPEATERS (same as before)
     ============================================================ */
     function renderTertiary() {
         if (state.tertiary.length === 0) state.tertiary.push(createTertiaryItem());
@@ -1074,7 +1074,7 @@ SCRIPTS
     });
 
     /* ============================================================
-    UPDATE PREVIEW
+    UPDATE PREVIEW – new compact template
     ============================================================ */
     function updatePreview() {
         // --- Personal ---
@@ -1114,11 +1114,11 @@ SCRIPTS
             previewSummaryText.textContent = summary;
             previewSummaryText.className = '';
         } else {
-            previewSummaryText.textContent = 'Add a professional summary in the form.';
+            previewSummaryText.textContent = 'Add a professional summary.';
             previewSummaryText.className = 'cv-empty';
         }
 
-        // --- Personal Details (compact) ---
+        // --- Personal Details (compact, with labels) ---
         let personalHtml = '';
         const dob = dobEl.value ? new Date(dobEl.value).toLocaleDateString() : '';
         const nat = nationalityEl.value.trim() || 'South African';
@@ -1128,17 +1128,16 @@ SCRIPTS
         const drivers = driversEl.value || 'None';
         const disabilities = disabilitiesEl.value.trim() || 'None';
         const alt = altEl.value.trim() || 'N/A';
-        personalHtml += `<div class="cv-item"><span class="cv-item-title">Date of Birth:</span> ${escHtml(dob)}</div>`;
+        const addr = addressEl.value.trim() || '';
+        personalHtml += `<div class="cv-item"><span class="cv-item-title">DOB:</span> ${escHtml(dob)}</div>`;
         personalHtml += `<div class="cv-item"><span class="cv-item-title">Nationality:</span> ${escHtml(nat)}</div>`;
         if (gender) personalHtml += `<div class="cv-item"><span class="cv-item-title">Gender:</span> ${escHtml(gender)}</div>`;
-        if (homeLang) personalHtml += `<div class="cv-item"><span class="cv-item-title">Home Language:</span> ${escHtml(homeLang)}</div>`;
-        personalHtml += `<div class="cv-item"><span class="cv-item-title">Criminal Record:</span> ${escHtml(criminal)}</div>`;
-        personalHtml += `<div class="cv-item"><span class="cv-item-title">Driver's License:</span> ${escHtml(drivers)}</div>`;
+        if (homeLang) personalHtml += `<div class="cv-item"><span class="cv-item-title">Home Lang:</span> ${escHtml(homeLang)}</div>`;
+        personalHtml += `<div class="cv-item"><span class="cv-item-title">Criminal:</span> ${escHtml(criminal)}</div>`;
+        personalHtml += `<div class="cv-item"><span class="cv-item-title">License:</span> ${escHtml(drivers)}</div>`;
         personalHtml += `<div class="cv-item"><span class="cv-item-title">Disabilities:</span> ${escHtml(disabilities)}</div>`;
-        personalHtml += `<div class="cv-item"><span class="cv-item-title">Alternative Number:</span> ${escHtml(alt)}</div>`;
-        if (addressEl.value.trim()) {
-            personalHtml += `<div class="cv-item"><span class="cv-item-title">Address:</span> ${escHtml(addressEl.value.trim())}</div>`;
-        }
+        personalHtml += `<div class="cv-item"><span class="cv-item-title">Alt Phone:</span> ${escHtml(alt)}</div>`;
+        if (addr) personalHtml += `<div class="cv-item"><span class="cv-item-title">Address:</span> ${escHtml(addr)}</div>`;
         previewPersonalDetails.innerHTML = personalHtml;
 
         // --- High School ---
@@ -1149,12 +1148,12 @@ SCRIPTS
         if (school || grade || subjects || syear) {
             let hsHtml = '';
             if (school) hsHtml += `<div class="cv-item"><span class="cv-item-title">School:</span> ${escHtml(school)}</div>`;
-            if (grade) hsHtml += `<div class="cv-item"><span class="cv-item-title">Highest Grade:</span> ${escHtml(grade)}</div>`;
-            if (subjects) hsHtml += `<div class="cv-item"><span class="cv-item-title">Major Subjects:</span> ${escHtml(subjects)}</div>`;
+            if (grade) hsHtml += `<div class="cv-item"><span class="cv-item-title">Grade:</span> ${escHtml(grade)}</div>`;
+            if (subjects) hsHtml += `<div class="cv-item"><span class="cv-item-title">Subjects:</span> ${escHtml(subjects)}</div>`;
             if (syear) hsHtml += `<div class="cv-item"><span class="cv-item-title">Year:</span> ${escHtml(syear)}</div>`;
             previewHighSchool.innerHTML = hsHtml;
         } else {
-            previewHighSchool.innerHTML = `<p class="cv-empty">No high school details added.</p>`;
+            previewHighSchool.innerHTML = `<p class="cv-empty">No high school details.</p>`;
         }
 
         // --- Tertiary ---
@@ -1172,10 +1171,10 @@ SCRIPTS
             });
             previewTertiaryList.innerHTML = tertHtml;
         } else {
-            previewTertiaryList.innerHTML = `<p class="cv-empty">No tertiary qualifications added.</p>`;
+            previewTertiaryList.innerHTML = `<p class="cv-empty">None added.</p>`;
         }
 
-        // --- Netcampus (Current Studies) ---
+        // --- Netcampus ---
         const inst = currentInstEl.value.trim();
         const cTitle = currentTitleEl.value.trim();
         const modules = currentModulesEl.value.trim();
@@ -1196,7 +1195,7 @@ SCRIPTS
             ncHtml += `</div>`;
             previewNetcampusContent.innerHTML = ncHtml;
         } else {
-            previewNetcampusContent.innerHTML = `<p class="cv-empty">No current studies added.</p>`;
+            previewNetcampusContent.innerHTML = `<p class="cv-empty">No current studies.</p>`;
         }
 
         // --- Work Experience ---
@@ -1231,10 +1230,10 @@ SCRIPTS
         const skills = skillsEl.value.trim();
         if (skills) {
             const items = skills.split(',').map(s => s.trim()).filter(Boolean);
-            previewSkillsText.textContent = items.join(' · ') || 'Add skills in the form.';
+            previewSkillsText.textContent = items.join(' · ') || 'Add skills.';
             previewSkillsText.className = '';
         } else {
-            previewSkillsText.textContent = 'Add skills in the form.';
+            previewSkillsText.textContent = 'Add skills.';
             previewSkillsText.className = 'cv-empty';
         }
 
@@ -1307,7 +1306,7 @@ SCRIPTS
     }
 
     /* ============================================================
-    PDF DOWNLOAD – FIXED: full-height clone capture
+    PDF GENERATION – FINAL FIX: uses a dedicated off‑screen clone
     ============================================================ */
     downloadBtn.addEventListener('click', function() {
         if (!validateForm()) {
@@ -1325,23 +1324,27 @@ SCRIPTS
         this.disabled = true;
         this.innerHTML = '<span class="spinner"></span> Generating PDF...';
 
+        // Get the current preview element
         const previewEl = document.getElementById('cvPreview');
 
-        // Clone the preview without any size restrictions
+        // Create a deep clone of the entire preview with all its content
         const clone = previewEl.cloneNode(true);
+
+        // Force the clone to be fully expanded and visible (off-screen)
         clone.style.overflow = 'visible';
         clone.style.height = 'auto';
         clone.style.maxHeight = 'none';
         clone.style.width = '800px';
         clone.style.margin = '0 auto';
-        clone.style.padding = '20px';
+        clone.style.padding = '15px';
         clone.style.background = '#fff';
+        clone.style.position = 'absolute';
+        clone.style.left = '-9999px';
+        clone.style.top = '0';
+        clone.style.zIndex = '-1';
 
-        // Create a hidden container
-        const tempContainer = document.createElement('div');
-        tempContainer.style.cssText = 'position:fixed;left:-9999px;top:0;width:800px;background:#fff;padding:0;margin:0;z-index:-1;overflow:visible;';
-        tempContainer.appendChild(clone);
-        document.body.appendChild(tempContainer);
+        // Append to body so it renders
+        document.body.appendChild(clone);
 
         // Wait for images to load
         const imgs = clone.querySelectorAll('img');
@@ -1349,8 +1352,9 @@ SCRIPTS
             if (img.complete) return Promise.resolve();
             return new Promise(resolve => { img.onload = resolve; img.onerror = resolve; });
         })).then(() => {
-            // Allow layout to settle
+            // Give layout a moment to settle
             setTimeout(() => {
+                // Capture the clone with html2canvas
                 html2canvas(clone, {
                     scale: 2.5,
                     useCORS: true,
@@ -1362,7 +1366,10 @@ SCRIPTS
                     windowWidth: clone.scrollWidth,
                     windowHeight: clone.scrollHeight,
                 }).then(canvas => {
-                    document.body.removeChild(tempContainer);
+                    // Remove the clone
+                    document.body.removeChild(clone);
+
+                    // Build PDF from canvas
                     const imgData = canvas.toDataURL('image/jpeg', 0.95);
                     const { jsPDF } = window.jspdf;
                     const pdf = new jsPDF('p', 'mm', 'a4');
@@ -1375,15 +1382,15 @@ SCRIPTS
                     downloadBtn.innerHTML = '⬇️ Download PDF';
                     showToast('PDF downloaded successfully!', 'success');
                 }).catch(err => {
-                    console.error('PDF error:', err);
-                    document.body.removeChild(tempContainer);
+                    console.error('PDF capture error:', err);
+                    document.body.removeChild(clone);
                     downloadBtn.disabled = false;
                     downloadBtn.innerHTML = '⬇️ Download PDF';
                     showToast('Error generating PDF. Please try again.', 'error');
                 });
-            }, 300);
+            }, 400);
         }).catch(() => {
-            // If images fail, still try to capture
+            // If images fail, still try capture after a delay
             setTimeout(() => {
                 html2canvas(clone, {
                     scale: 2.5,
@@ -1396,7 +1403,7 @@ SCRIPTS
                     windowWidth: clone.scrollWidth,
                     windowHeight: clone.scrollHeight,
                 }).then(canvas => {
-                    document.body.removeChild(tempContainer);
+                    document.body.removeChild(clone);
                     const imgData = canvas.toDataURL('image/jpeg', 0.95);
                     const { jsPDF } = window.jspdf;
                     const pdf = new jsPDF('p', 'mm', 'a4');
@@ -1409,13 +1416,13 @@ SCRIPTS
                     downloadBtn.innerHTML = '⬇️ Download PDF';
                     showToast('PDF downloaded successfully!', 'success');
                 }).catch(err => {
-                    console.error('PDF error:', err);
-                    document.body.removeChild(tempContainer);
+                    console.error('PDF capture error:', err);
+                    document.body.removeChild(clone);
                     downloadBtn.disabled = false;
                     downloadBtn.innerHTML = '⬇️ Download PDF';
                     showToast('Error generating PDF. Please try again.', 'error');
                 });
-            }, 300);
+            }, 400);
         });
     });
 
@@ -1423,7 +1430,6 @@ SCRIPTS
     RESET
     ============================================================ */
     resetBtn.addEventListener('click', function() {
-        // Reset all fields to empty/default
         firstNameEl.value = '';
         surnameEl.value = '';
         fullNameEl.value = '';
@@ -1456,7 +1462,6 @@ SCRIPTS
         summaryEl.value = '';
         skillsEl.value = '';
 
-        // Pre‑fill work and references with samples
         state.tertiary = [createTertiaryItem()];
         state.work = [
             createWorkItem({ company: 'Heart Solutions', jobTitle: 'Technician', duration: '2020 - Present', duties: '• System support\n• Hardware maintenance' })
@@ -1470,7 +1475,6 @@ SCRIPTS
         renderWork();
         renderReferences();
         updatePreview();
-
         document.querySelectorAll('.form-group.invalid').forEach(g => g.classList.remove('invalid'));
         showToast('Preview reset to defaults.', 'info');
     });
@@ -1481,7 +1485,7 @@ SCRIPTS
     function init() {
         if (!dobEl.value) dobEl.value = '2000-01-01';
 
-        // Pre‑fill work, references, skills, summary with samples
+        // Pre‑fill with samples
         state.tertiary = [createTertiaryItem()];
         state.work = [
             createWorkItem({ company: 'Heart Solutions', jobTitle: 'Technician', duration: '2020 - Present', duties: '• System support\n• Hardware maintenance' })
@@ -1497,7 +1501,6 @@ SCRIPTS
         renderWork();
         renderReferences();
         updatePreview();
-
         console.log('✅ CV Builder initialized.');
     }
     init();
