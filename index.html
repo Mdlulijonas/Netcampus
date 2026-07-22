@@ -1,0 +1,1899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CV Builder | Netcampus</title>
+
+    <!-- ============================================================
+    STYLES
+    ============================================================ -->
+    <style>
+        /* ----- RESET & BASE ----- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 14px;
+            background: #f5f7fa;
+            color: #1e293b;
+            padding: 20px;
+        }
+
+        /* ----- LAYOUT ----- */
+        .app-wrapper {
+            max-width: 1440px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        @media (max-width: 1024px) {
+            .app-wrapper {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+        }
+
+        /* ----- FORM (LEFT) ----- */
+        .form-panel {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 28px 32px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            max-height: 95vh;
+            overflow-y: auto;
+        }
+
+        .form-panel::-webkit-scrollbar {
+            width: 6px;
+        }
+        .form-panel::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 8px;
+        }
+        .form-panel::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 8px;
+        }
+
+        .form-panel h1 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            letter-spacing: -0.3px;
+        }
+
+        .form-panel .subhead {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 24px;
+            border-bottom: 2px solid #e9edf2;
+            padding-bottom: 14px;
+        }
+
+        /* ----- FORM ELEMENTS ----- */
+        .form-section {
+            margin-bottom: 28px;
+        }
+
+        .form-section h2 {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 14px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #1e293b;
+            letter-spacing: -0.2px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px 20px;
+            margin-bottom: 12px;
+        }
+
+        .form-row.three-col {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+
+        .form-row.single {
+            grid-template-columns: 1fr;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            font-size: 13px;
+            color: #334155;
+        }
+
+        .form-group label .required {
+            color: #dc2626;
+            margin-left: 2px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 9px 12px;
+            border: 1.5px solid #d1d9e6;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            background: #fafcff;
+            transition: border 0.2s, box-shadow 0.2s;
+            width: 100%;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .form-group .hint {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        /* ----- PHOTO UPLOAD ----- */
+        .photo-upload-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .photo-preview-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 2px dashed #b9c7da;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .photo-preview-circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .photo-preview-circle .placeholder {
+            color: #94a3b8;
+            font-size: 12px;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .photo-upload-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .photo-upload-controls .file-input-wrap {
+            position: relative;
+        }
+
+        .photo-upload-controls .file-input-wrap input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            background: #e9edf2;
+            color: #1e293b;
+        }
+
+        .btn:hover {
+            background: #d1d9e6;
+        }
+
+        .btn-primary {
+            background: #1e293b;
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background: #0f172a;
+        }
+
+        .btn-success {
+            background: #16a34a;
+            color: #fff;
+        }
+        .btn-success:hover {
+            background: #15803d;
+        }
+
+        .btn-danger {
+            background: #dc2626;
+            color: #fff;
+        }
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid #d1d9e6;
+        }
+        .btn-outline:hover {
+            background: #f1f5f9;
+        }
+
+        .btn-sm {
+            padding: 4px 12px;
+            font-size: 12px;
+        }
+
+        /* ----- REPEATER ----- */
+        .repeater-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 8px;
+        }
+
+        .repeater-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 16px 18px;
+            position: relative;
+        }
+
+        .repeater-item .remove-btn {
+            position: absolute;
+            top: 10px;
+            right: 12px;
+            background: transparent;
+            border: none;
+            font-size: 18px;
+            color: #94a3b8;
+            cursor: pointer;
+            line-height: 1;
+        }
+        .repeater-item .remove-btn:hover {
+            color: #dc2626;
+        }
+
+        .repeater-item .form-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .repeater-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* ----- PREVIEW (RIGHT) ----- */
+        .preview-panel {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 28px 32px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            position: sticky;
+            top: 20px;
+            max-height: 95vh;
+            overflow-y: auto;
+        }
+
+        .preview-panel::-webkit-scrollbar {
+            width: 6px;
+        }
+        .preview-panel::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 8px;
+        }
+        .preview-panel::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 8px;
+        }
+
+        .preview-panel .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 18px;
+            padding-bottom: 14px;
+            border-bottom: 2px solid #1e293b;
+        }
+
+        .preview-panel .preview-name-title {
+            flex: 1;
+        }
+
+        .preview-panel .preview-name {
+            font-size: 32px;
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -0.5px;
+            color: #0f172a;
+        }
+
+        .preview-panel .preview-title {
+            font-size: 18px;
+            font-weight: 400;
+            color: #475569;
+            margin-top: 2px;
+        }
+
+        .preview-panel .preview-contact {
+            font-size: 13px;
+            color: #475569;
+            margin-top: 6px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px 16px;
+        }
+
+        .preview-panel .preview-contact span {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .preview-panel .preview-photo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 2px solid #e2e8f0;
+            flex-shrink: 0;
+            overflow: hidden;
+            background: #f1f5f9;
+            margin-left: 20px;
+        }
+
+        .preview-panel .preview-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .preview-panel .preview-photo .placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            font-size: 11px;
+            text-align: center;
+            padding: 8px;
+        }
+
+        /* ----- PREVIEW SECTIONS ----- */
+        .preview-section {
+            margin-bottom: 18px;
+        }
+
+        .preview-section h3 {
+            font-size: 16px;
+            font-weight: 700;
+            padding-bottom: 4px;
+            border-bottom: 2px solid #1e293b;
+            margin-bottom: 10px;
+            letter-spacing: -0.2px;
+            text-transform: uppercase;
+            font-size: 14px;
+        }
+
+        .preview-section h3.netcampus-accent {
+            border-bottom-color: #F97316;
+            color: #F97316;
+        }
+
+        .preview-section p,
+        .preview-section li {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #1e293b;
+        }
+
+        .preview-section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .preview-section ul li {
+            padding-left: 18px;
+            position: relative;
+            margin-bottom: 2px;
+        }
+
+        .preview-section ul li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #475569;
+        }
+
+        .preview-section .entry {
+            margin-bottom: 12px;
+        }
+
+        .preview-section .entry-title {
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .preview-section .entry-sub {
+            font-weight: 600;
+            color: #334155;
+            font-size: 14px;
+        }
+
+        .preview-section .entry-meta {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 4px;
+        }
+
+        .preview-section .entry-duties {
+            margin-top: 4px;
+            padding-left: 4px;
+        }
+
+        .preview-section .entry-duties li {
+            font-size: 13.5px;
+        }
+
+        .preview-empty {
+            color: #94a3b8;
+            font-size: 13px;
+            font-style: italic;
+        }
+
+        /* ----- PDF BUTTON ----- */
+        .pdf-actions {
+            margin-top: 24px;
+            padding-top: 18px;
+            border-top: 2px solid #e9edf2;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .pdf-actions .btn {
+            padding: 12px 28px;
+            font-size: 15px;
+        }
+
+        .btn-pdf {
+            background: #dc2626;
+            color: #fff;
+        }
+        .btn-pdf:hover {
+            background: #b91c1c;
+        }
+
+        .btn-pdf:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* ----- VALIDATION ----- */
+        .form-group .error-msg {
+            color: #dc2626;
+            font-size: 12px;
+            display: none;
+            margin-top: 2px;
+        }
+
+        .form-group.invalid input,
+        .form-group.invalid select,
+        .form-group.invalid textarea {
+            border-color: #dc2626;
+        }
+
+        .form-group.invalid .error-msg {
+            display: block;
+        }
+
+        /* ----- RESPONSIVE TWEAKS ----- */
+        @media (max-width: 768px) {
+            .form-panel,
+            .preview-panel {
+                padding: 16px 18px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .form-row.three-col {
+                grid-template-columns: 1fr;
+            }
+
+            .photo-upload-wrapper {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .preview-panel .preview-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .preview-panel .preview-photo {
+                margin-left: 0;
+                margin-top: 12px;
+                width: 80px;
+                height: 80px;
+            }
+
+            .preview-panel .preview-name {
+                font-size: 26px;
+            }
+        }
+
+        /* scrollable form on mobile */
+        @media (max-width: 1024px) {
+            .form-panel {
+                max-height: none;
+                overflow-y: visible;
+            }
+            .preview-panel {
+                position: static;
+                max-height: none;
+                overflow-y: visible;
+            }
+        }
+
+        /* Loading spinner */
+        .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2.5px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #1e293b;
+            color: #fff;
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            transform: translateY(80px);
+            opacity: 0;
+            transition: transform 0.35s ease, opacity 0.35s ease;
+            z-index: 999;
+            max-width: 400px;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.error {
+            background: #dc2626;
+        }
+        .toast.success {
+            background: #16a34a;
+        }
+
+        /* Netcampus orange accent in preview */
+        .netcampus-badge {
+            display: inline-block;
+            background: #F97316;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 12px;
+            border-radius: 20px;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            margin-left: 8px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ============================================================
+    TOAST NOTIFICATION
+    ============================================================ -->
+    <div id="toast" class="toast"></div>
+
+    <!-- ============================================================
+    MAIN APP
+    ============================================================ -->
+    <div class="app-wrapper">
+
+        <!-- ============================================================
+        FORM PANEL (LEFT)
+        ============================================================ -->
+        <div class="form-panel" id="formPanel">
+
+            <h1>📄 CV Builder</h1>
+            <p class="subhead">Fill in your details &amp; see a live preview. <span style="color:#dc2626;">*</span> required</p>
+
+            <form id="cvForm" novalidate>
+
+                <!-- ==========================================
+                A. PERSONAL DETAILS
+                ========================================== -->
+                <div class="form-section">
+                    <h2>A. Personal Details</h2>
+
+                    <!-- Full Name (auto-split) -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Full Name <span class="required">*</span></label>
+                            <input type="text" id="fullName" placeholder="e.g. Thabo Mokoena" required />
+                            <div class="error-msg">Full name is required</div>
+                        </div>
+                    </div>
+
+                    <!-- First Name + Surname (auto-filled) -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>First Name <span class="required">*</span></label>
+                            <input type="text" id="firstName" placeholder="Thabo" required />
+                            <div class="error-msg">First name is required</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Surname <span class="required">*</span></label>
+                            <input type="text" id="surname" placeholder="Mokoena" required />
+                            <div class="error-msg">Surname is required</div>
+                        </div>
+                    </div>
+
+                    <!-- Date of Birth + Nationality -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Date of Birth <span class="required">*</span></label>
+                            <input type="date" id="dob" required />
+                            <div class="error-msg">Date of birth is required</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Nationality</label>
+                            <input type="text" id="nationality" value="South African" />
+                        </div>
+                    </div>
+
+                    <!-- Gender + Home Language -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Gender</label>
+                            <select id="gender">
+                                <option value="">Select</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Prefer not to say">Prefer not to say</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Home Language</label>
+                            <input type="text" id="homeLanguage" placeholder="e.g. isiZulu, English" />
+                        </div>
+                    </div>
+
+                    <!-- Criminal Record + Driver's License -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Criminal Record</label>
+                            <select id="criminalRecord">
+                                <option value="No">No</option>
+                                <option value="Yes">Yes</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Driver's License</label>
+                            <select id="driversLicense">
+                                <option value="None">None</option>
+                                <option value="Code 8">Code 8</option>
+                                <option value="Code 10">Code 10</option>
+                                <option value="Code 14">Code 14</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Disabilities -->
+                    <div class="form-row single">
+                        <div class="form-group">
+                            <label>Disabilities</label>
+                            <input type="text" id="disabilities" placeholder="e.g. None, or specify" />
+                        </div>
+                    </div>
+
+                    <!-- Contact Number + Alternative -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Contact Number <span class="required">*</span></label>
+                            <input type="tel" id="contactNumber" placeholder="+27 82 123 4567" required />
+                            <div class="error-msg">Contact number is required</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Alternative Number</label>
+                            <input type="tel" id="altNumber" placeholder="+27 82 987 6543" />
+                        </div>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="form-row single">
+                        <div class="form-group">
+                            <label>Email Address <span class="required">*</span></label>
+                            <input type="email" id="email" placeholder="thabo@example.com" required />
+                            <div class="error-msg">Valid email is required</div>
+                        </div>
+                    </div>
+
+                    <!-- Residential Address -->
+                    <div class="form-row single">
+                        <div class="form-group">
+                            <label>Residential Address</label>
+                            <textarea id="address" placeholder="Street, City, Province, Postal code"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Professional Photo -->
+                    <div class="form-row single">
+                        <div class="form-group">
+                            <label>Professional Photo <span class="hint">(JPG/PNG, max 2MB)</span></label>
+                            <div class="photo-upload-wrapper">
+                                <div class="photo-preview-circle" id="photoPreview">
+                                    <span class="placeholder">📷<br />Photo</span>
+                                </div>
+                                <div class="photo-upload-controls">
+                                    <div class="file-input-wrap">
+                                        <button type="button" class="btn btn-outline">Choose Photo</button>
+                                        <input type="file" id="photoInput" accept=".jpg,.jpeg,.png" />
+                                    </div>
+                                    <span class="hint" id="photoStatus">No file selected</span>
+                                    <button type="button" class="btn btn-sm btn-danger" id="removePhotoBtn" style="display:none;">Remove</button>
+                                </div>
+                            </div>
+                            <!-- Hidden field to store base64 -->
+                            <input type="hidden" id="photoBase64" value="" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==========================================
+                B. HIGH SCHOOL CERTIFICATE
+                ========================================== -->
+                <div class="form-section">
+                    <h2>B. High School Certificate</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Name of School</label>
+                            <input type="text" id="schoolName" placeholder="e.g. Soweto High School" />
+                        </div>
+                        <div class="form-group">
+                            <label>Highest Grade Passed</label>
+                            <select id="highestGrade">
+                                <option value="">Select</option>
+                                <option value="Grade 8">Grade 8</option>
+                                <option value="Grade 9">Grade 9</option>
+                                <option value="Grade 10">Grade 10</option>
+                                <option value="Grade 11">Grade 11</option>
+                                <option value="Grade 12">Grade 12</option>
+                                <option value="Matric">Matric</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Major Subjects</label>
+                            <textarea id="majorSubjects" placeholder="e.g. Mathematics, English, Life Sciences"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Year Obtained</label>
+                            <input type="number" id="schoolYear" placeholder="e.g. 2022" min="1960" max="2099" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==========================================
+                C. TERTIARY QUALIFICATIONS (Repeater)
+                ========================================== -->
+                <div class="form-section">
+                    <h2>C. Tertiary Qualifications</h2>
+                    <div id="tertiaryContainer" class="repeater-container">
+                        <!-- Items injected by JS -->
+                    </div>
+                    <div class="repeater-actions">
+                        <button type="button" class="btn btn-success btn-sm" id="addTertiaryBtn">+ Add Tertiary Qualification</button>
+                    </div>
+                </div>
+
+                <!-- ==========================================
+                D. CURRENT STUDIES (Netcampus)
+                ========================================== -->
+                <div class="form-section">
+                    <h2>D. Current Studies <span style="color:#F97316;font-size:13px;">(Netcampus)</span></h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Institution</label>
+                            <input type="text" id="currentInstitution" value="Netcampus" />
+                        </div>
+                        <div class="form-group">
+                            <label>Title</label>
+                            <input type="text" id="currentTitle" value="Netcampus Internship Programme 2026" />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Modules</label>
+                            <textarea id="currentModules">Soft Skills, IT Fundamentals, CompTIA Network+, Microsoft Azure Fundamentals AZ-900, Microsoft Azure Associate AZ-104</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Duration</label>
+                            <input type="text" id="currentDuration" value="12 Months" placeholder="e.g. 12 Months" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==========================================
+                E. WORK EXPERIENCE (Repeater)
+                ========================================== -->
+                <div class="form-section">
+                    <h2>E. Work Experience</h2>
+                    <div id="workContainer" class="repeater-container">
+                        <!-- Items injected by JS -->
+                    </div>
+                    <div class="repeater-actions">
+                        <button type="button" class="btn btn-success btn-sm" id="addWorkBtn">+ Add Work Experience</button>
+                    </div>
+                </div>
+
+                <!-- ==========================================
+                F. REFERENCES (Repeater) – 2 defaults
+                ========================================== -->
+                <div class="form-section">
+                    <h2>F. References</h2>
+                    <div id="refContainer" class="repeater-container">
+                        <!-- Items injected by JS -->
+                    </div>
+                    <div class="repeater-actions">
+                        <button type="button" class="btn btn-success btn-sm" id="addRefBtn">+ Add Reference</button>
+                    </div>
+                </div>
+
+                <!-- ==========================================
+                PROFESSIONAL SUMMARY (extra for CV)
+                ========================================== -->
+                <div class="form-section">
+                    <h2>Professional Summary</h2>
+                    <div class="form-row single">
+                        <div class="form-group">
+                            <label>Objective / Summary</label>
+                            <textarea id="professionalSummary" placeholder="Brief summary of your professional background and career goals..." rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==========================================
+                SKILLS (extra for CV)
+                ========================================== -->
+                <div class="form-section">
+                    <h2>Skills</h2>
+                    <div class="form-row single">
+                        <div class="form-group">
+                            <label>Key Skills <span class="hint">(comma separated)</span></label>
+                            <input type="text" id="skillsInput" placeholder="e.g. Project Management, Python, Public Speaking" />
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+        <!-- ============================================================
+        PREVIEW PANEL (RIGHT)
+        ============================================================ -->
+        <div class="preview-panel" id="previewPanel">
+
+            <h2 style="font-size:18px;margin-bottom:14px;">📋 CV Preview</h2>
+
+            <div id="cvPreview">
+
+                <!-- Header -->
+                <div class="preview-header">
+                    <div class="preview-name-title">
+                        <div class="preview-name" id="previewName">Your Full Name</div>
+                        <div class="preview-title" id="previewJobTitle">Professional Title</div>
+                        <div class="preview-contact" id="previewContact">
+                            <span id="previewLocation">📍 Location</span>
+                            <span id="previewPhone">📞 Phone</span>
+                            <span id="previewEmail">✉️ email@example.com</span>
+                        </div>
+                    </div>
+                    <div class="preview-photo" id="previewPhotoWrap">
+                        <span class="placeholder">📷</span>
+                    </div>
+                </div>
+
+                <!-- Professional Summary -->
+                <div class="preview-section" id="previewSummarySection">
+                    <h3>Professional Summary</h3>
+                    <p id="previewSummaryText" class="preview-empty">Add a professional summary in the form.</p>
+                </div>
+
+                <!-- Work Experience -->
+                <div class="preview-section" id="previewWorkSection">
+                    <h3>Work Experience</h3>
+                    <div id="previewWorkList"><p class="preview-empty">No work experience added.</p></div>
+                </div>
+
+                <!-- Education -->
+                <div class="preview-section" id="previewEducationSection">
+                    <h3>Education</h3>
+                    <div id="previewEducationList"><p class="preview-empty">No education details added.</p></div>
+                </div>
+
+                <!-- Skills -->
+                <div class="preview-section" id="previewSkillsSection">
+                    <h3>Skills</h3>
+                    <p id="previewSkillsText" class="preview-empty">Add skills in the form.</p>
+                </div>
+
+                <!-- NetCampus (Current Studies) -->
+                <div class="preview-section" id="previewNetcampusSection">
+                    <h3 id="netcampusHeading">NetCampus <span class="netcampus-badge">Current</span></h3>
+                    <div id="previewNetcampusContent"><p class="preview-empty">No current studies added.</p></div>
+                </div>
+
+                <!-- References -->
+                <div class="preview-section" id="previewRefSection">
+                    <h3>References</h3>
+                    <div id="previewRefList"><p class="preview-empty">No references added.</p></div>
+                </div>
+
+            </div>
+
+            <!-- PDF Actions -->
+            <div class="pdf-actions">
+                <button type="button" class="btn btn-pdf" id="downloadPdfBtn">
+                    ⬇️ Download PDF
+                </button>
+                <button type="button" class="btn btn-outline" id="resetPreviewBtn">↻ Reset Preview</button>
+                <span style="font-size:12px;color:#94a3b8;margin-left:auto;align-self:center;">
+                    * All required fields must be filled
+                </span>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ============================================================
+    SCRIPTS
+    ============================================================ -->
+
+    <!-- html2pdf library for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script>
+        /* ============================================================
+        MAIN APPLICATION SCRIPT
+        ============================================================ */
+
+        // ============================================================
+        // 1. STATE
+        // ============================================================
+        const state = {
+            photoBase64: '',
+            photoFile: null,
+            tertiary: [],
+            work: [],
+            references: [],
+        };
+
+        // ============================================================
+        // 2. DOM REFS
+        // ============================================================
+        const $ = (sel) => document.querySelector(sel);
+        const $$ = (sel) => document.querySelectorAll(sel);
+
+        const fullNameEl = $('#fullName');
+        const firstNameEl = $('#firstName');
+        const surnameEl = $('#surname');
+        const dobEl = $('#dob');
+        const nationalityEl = $('#nationality');
+        const genderEl = $('#gender');
+        const homeLangEl = $('#homeLanguage');
+        const criminalEl = $('#criminalRecord');
+        const driversEl = $('#driversLicense');
+        const disabilitiesEl = $('#disabilities');
+        const contactEl = $('#contactNumber');
+        const altEl = $('#altNumber');
+        const emailEl = $('#email');
+        const addressEl = $('#address');
+        const photoInput = $('#photoInput');
+        const photoPreview = $('#photoPreview');
+        const photoStatus = $('#photoStatus');
+        const photoBase64Input = $('#photoBase64');
+        const removePhotoBtn = $('#removePhotoBtn');
+
+        const schoolNameEl = $('#schoolName');
+        const highestGradeEl = $('#highestGrade');
+        const majorSubjectsEl = $('#majorSubjects');
+        const schoolYearEl = $('#schoolYear');
+
+        const currentInstEl = $('#currentInstitution');
+        const currentTitleEl = $('#currentTitle');
+        const currentModulesEl = $('#currentModules');
+        const currentDurationEl = $('#currentDuration');
+
+        const summaryEl = $('#professionalSummary');
+        const skillsEl = $('#skillsInput');
+
+        const tertiaryContainer = $('#tertiaryContainer');
+        const workContainer = $('#workContainer');
+        const refContainer = $('#refContainer');
+
+        const addTertiaryBtn = $('#addTertiaryBtn');
+        const addWorkBtn = $('#addWorkBtn');
+        const addRefBtn = $('#addRefBtn');
+
+        const previewName = $('#previewName');
+        const previewJobTitle = $('#previewJobTitle');
+        const previewLocation = $('#previewLocation');
+        const previewPhone = $('#previewPhone');
+        const previewEmail = $('#previewEmail');
+        const previewPhotoWrap = $('#previewPhotoWrap');
+        const previewSummaryText = $('#previewSummaryText');
+        const previewWorkList = $('#previewWorkList');
+        const previewEducationList = $('#previewEducationList');
+        const previewSkillsText = $('#previewSkillsText');
+        const previewNetcampusContent = $('#previewNetcampusContent');
+        const previewRefList = $('#previewRefList');
+        const netcampusHeading = $('#netcampusHeading');
+
+        const downloadBtn = $('#downloadPdfBtn');
+        const resetBtn = $('#resetPreviewBtn');
+        const toast = $('#toast');
+
+        // ============================================================
+        // 3. HELPER FUNCTIONS
+        // ============================================================
+        function showToast(msg, type = 'info', duration = 4000) {
+            toast.textContent = msg;
+            toast.className = 'toast ' + type;
+            // force reflow
+            void toast.offsetWidth;
+            toast.classList.add('show');
+            clearTimeout(toast._timer);
+            toast._timer = setTimeout(() => toast.classList.remove('show'), duration);
+        }
+
+        function generateId() {
+            return Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+        }
+
+        // ============================================================
+        // 4. PHOTO HANDLING
+        // ============================================================
+        photoInput.addEventListener('change', function(e) {
+            const file = this.files[0];
+            if (!file) return;
+
+            // Validate type
+            const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+            if (!validTypes.includes(file.type)) {
+                showToast('Please upload a JPG or PNG image.', 'error');
+                this.value = '';
+                return;
+            }
+
+            // Validate size (2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                showToast('Image must be smaller than 2MB.', 'error');
+                this.value = '';
+                return;
+            }
+
+            state.photoFile = file;
+
+            // Show preview locally
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                const dataUrl = ev.target.result;
+                photoPreview.innerHTML = `<img src="${dataUrl}" alt="Profile photo" />`;
+                photoStatus.textContent = '✅ Photo loaded';
+                removePhotoBtn.style.display = 'inline-block';
+                // Store base64 for PDF
+                state.photoBase64 = dataUrl;
+                photoBase64Input.value = dataUrl;
+                updatePreview();
+            };
+            reader.readAsDataURL(file);
+
+            // Also upload to server via PHP
+            uploadPhoto(file);
+        });
+
+        removePhotoBtn.addEventListener('click', function() {
+            state.photoFile = null;
+            state.photoBase64 = '';
+            photoBase64Input.value = '';
+            photoPreview.innerHTML = `<span class="placeholder">📷<br />Photo</span>`;
+            photoStatus.textContent = 'No file selected';
+            this.style.display = 'none';
+            photoInput.value = '';
+            updatePreview();
+        });
+
+        function uploadPhoto(file) {
+            const formData = new FormData();
+            formData.append('photo', file);
+
+            fetch('upload.php', {
+                    method: 'POST',
+                    body: formData,
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        // Server returned base64, use it if local one failed
+                        if (data.base64 && !state.photoBase64) {
+                            state.photoBase64 = data.base64;
+                            photoBase64Input.value = data.base64;
+                            photoPreview.innerHTML = `<img src="${data.base64}" alt="Profile photo" />`;
+                            photoStatus.textContent = '✅ Uploaded to server';
+                            updatePreview();
+                        }
+                        console.log('Photo uploaded:', data.file);
+                    } else {
+                        console.warn('Photo upload warning:', data.error);
+                        // Still keep local preview
+                    }
+                })
+                .catch(err => {
+                    console.warn('Photo upload error:', err);
+                    // Local preview remains
+                });
+        }
+
+        // ============================================================
+        // 5. REPEATER HELPERS
+        // ============================================================
+        function createTertiaryItem(data = {}) {
+            const id = generateId();
+            return {
+                id,
+                institution: data.institution || '',
+                qualification: data.qualification || '',
+                year: data.year || '',
+                modules: data.modules || '',
+            };
+        }
+
+        function createWorkItem(data = {}) {
+            const id = generateId();
+            return {
+                id,
+                company: data.company || '',
+                jobTitle: data.jobTitle || '',
+                duration: data.duration || '',
+                duties: data.duties || '',
+            };
+        }
+
+        function createRefItem(data = {}) {
+            const id = generateId();
+            return {
+                id,
+                name: data.name || '',
+                organization: data.organization || '',
+                position: data.position || '',
+                phone: data.phone || '',
+            };
+        }
+
+        // ============================================================
+        // 6. RENDER REPEATERS
+        // ============================================================
+        function renderTertiary() {
+            if (state.tertiary.length === 0) {
+                // Add one empty by default
+                state.tertiary.push(createTertiaryItem());
+            }
+            tertiaryContainer.innerHTML = state.tertiary.map((item, idx) => `
+                    <div class="repeater-item" data-id="${item.id}">
+                        <button type="button" class="remove-btn" data-action="remove-tertiary" data-id="${item.id}">✕</button>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Institution</label>
+                                <input type="text" class="tertiary-inst" value="${escHtml(item.institution)}" placeholder="e.g. University of Johannesburg" />
+                            </div>
+                            <div class="form-group">
+                                <label>Qualification</label>
+                                <input type="text" class="tertiary-qual" value="${escHtml(item.qualification)}" placeholder="e.g. BSc Computer Science" />
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Year Obtained</label>
+                                <input type="number" class="tertiary-year" value="${escHtml(item.year)}" placeholder="e.g. 2024" min="1960" max="2099" />
+                            </div>
+                            <div class="form-group">
+                                <label>Modules</label>
+                                <textarea class="tertiary-modules" placeholder="e.g. Data Structures, Algorithms, Databases">${escHtml(item.modules)}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+            // Attach events
+            tertiaryContainer.querySelectorAll('.remove-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.dataset.id;
+                    state.tertiary = state.tertiary.filter(t => t.id !== id);
+                    if (state.tertiary.length === 0) {
+                        state.tertiary.push(createTertiaryItem());
+                    }
+                    renderTertiary();
+                    updatePreview();
+                });
+            });
+
+            // Bind input events
+            tertiaryContainer.querySelectorAll('.tertiary-inst').forEach((el, i) => {
+                el.addEventListener('input', function() { state.tertiary[i].institution = this.value;
+                    updatePreview(); });
+            });
+            tertiaryContainer.querySelectorAll('.tertiary-qual').forEach((el, i) => {
+                el.addEventListener('input', function() { state.tertiary[i].qualification = this.value;
+                    updatePreview(); });
+            });
+            tertiaryContainer.querySelectorAll('.tertiary-year').forEach((el, i) => {
+                el.addEventListener('input', function() { state.tertiary[i].year = this.value;
+                    updatePreview(); });
+            });
+            tertiaryContainer.querySelectorAll('.tertiary-modules').forEach((el, i) => {
+                el.addEventListener('input', function() { state.tertiary[i].modules = this.value;
+                    updatePreview(); });
+            });
+        }
+
+        function renderWork() {
+            if (state.work.length === 0) {
+                state.work.push(createWorkItem());
+            }
+            workContainer.innerHTML = state.work.map((item, idx) => `
+                    <div class="repeater-item" data-id="${item.id}">
+                        <button type="button" class="remove-btn" data-action="remove-work" data-id="${item.id}">✕</button>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Company</label>
+                                <input type="text" class="work-company" value="${escHtml(item.company)}" placeholder="e.g. ABC Corp" />
+                            </div>
+                            <div class="form-group">
+                                <label>Job Title</label>
+                                <input type="text" class="work-title" value="${escHtml(item.jobTitle)}" placeholder="e.g. Software Developer" />
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Duration</label>
+                                <input type="text" class="work-duration" value="${escHtml(item.duration)}" placeholder="e.g. Jan 2020 - Present" />
+                            </div>
+                            <div class="form-group">
+                                <label>Duties <span class="hint">(bullet points)</span></label>
+                                <textarea class="work-duties" placeholder="• Developed web apps&#10;• Led a team of 5">${escHtml(item.duties)}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+            workContainer.querySelectorAll('.remove-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.dataset.id;
+                    state.work = state.work.filter(w => w.id !== id);
+                    if (state.work.length === 0) {
+                        state.work.push(createWorkItem());
+                    }
+                    renderWork();
+                    updatePreview();
+                });
+            });
+
+            workContainer.querySelectorAll('.work-company').forEach((el, i) => {
+                el.addEventListener('input', function() { state.work[i].company = this.value;
+                    updatePreview(); });
+            });
+            workContainer.querySelectorAll('.work-title').forEach((el, i) => {
+                el.addEventListener('input', function() { state.work[i].jobTitle = this.value;
+                    updatePreview(); });
+            });
+            workContainer.querySelectorAll('.work-duration').forEach((el, i) => {
+                el.addEventListener('input', function() { state.work[i].duration = this.value;
+                    updatePreview(); });
+            });
+            workContainer.querySelectorAll('.work-duties').forEach((el, i) => {
+                el.addEventListener('input', function() { state.work[i].duties = this.value;
+                    updatePreview(); });
+            });
+        }
+
+        function renderReferences() {
+            if (state.references.length === 0) {
+                // Pre-fill 2 defaults
+                state.references.push(createRefItem({ name: 'Dr. Sarah Ndlovu', organization: 'University of Cape Town',
+                    position: 'Senior Lecturer', phone: '+27 82 111 2222' }));
+                state.references.push(createRefItem({ name: 'Mr. James Pillay', organization: 'TechSolutions SA',
+                    position: 'CTO', phone: '+27 83 333 4444' }));
+            }
+            refContainer.innerHTML = state.references.map((item, idx) => `
+                    <div class="repeater-item" data-id="${item.id}">
+                        <button type="button" class="remove-btn" data-action="remove-ref" data-id="${item.id}">✕</button>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Name &amp; Surname</label>
+                                <input type="text" class="ref-name" value="${escHtml(item.name)}" placeholder="e.g. Thabo Mokoena" />
+                            </div>
+                            <div class="form-group">
+                                <label>Organization</label>
+                                <input type="text" class="ref-org" value="${escHtml(item.organization)}" placeholder="e.g. ABC Ltd" />
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Position</label>
+                                <input type="text" class="ref-pos" value="${escHtml(item.position)}" placeholder="e.g. Manager" />
+                            </div>
+                            <div class="form-group">
+                                <label>Phone Number</label>
+                                <input type="tel" class="ref-phone" value="${escHtml(item.phone)}" placeholder="+27 82 123 4567" />
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+            refContainer.querySelectorAll('.remove-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.dataset.id;
+                    state.references = state.references.filter(r => r.id !== id);
+                    if (state.references.length === 0) {
+                        state.references.push(createRefItem());
+                    }
+                    renderReferences();
+                    updatePreview();
+                });
+            });
+
+            refContainer.querySelectorAll('.ref-name').forEach((el, i) => {
+                el.addEventListener('input', function() { state.references[i].name = this.value;
+                    updatePreview(); });
+            });
+            refContainer.querySelectorAll('.ref-org').forEach((el, i) => {
+                el.addEventListener('input', function() { state.references[i].organization = this.value;
+                    updatePreview(); });
+            });
+            refContainer.querySelectorAll('.ref-pos').forEach((el, i) => {
+                el.addEventListener('input', function() { state.references[i].position = this.value;
+                    updatePreview(); });
+            });
+            refContainer.querySelectorAll('.ref-phone').forEach((el, i) => {
+                el.addEventListener('input', function() { state.references[i].phone = this.value;
+                    updatePreview(); });
+            });
+        }
+
+        // ============================================================
+        // 7. ADD BUTTONS
+        // ============================================================
+        addTertiaryBtn.addEventListener('click', function() {
+            state.tertiary.push(createTertiaryItem());
+            renderTertiary();
+            updatePreview();
+        });
+
+        addWorkBtn.addEventListener('click', function() {
+            state.work.push(createWorkItem());
+            renderWork();
+            updatePreview();
+        });
+
+        addRefBtn.addEventListener('click', function() {
+            state.references.push(createRefItem());
+            renderReferences();
+            updatePreview();
+        });
+
+        // ============================================================
+        // 8. ESCAPE HTML
+        // ============================================================
+        function escHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+
+        // ============================================================
+        // 9. UPDATE PREVIEW
+        // ============================================================
+        function updatePreview() {
+            // --- Personal ---
+            const firstName = firstNameEl.value.trim() || 'First';
+            const surname = surnameEl.value.trim() || 'Last';
+            const fullName = (firstName + ' ' + surname).trim() || 'Your Full Name';
+            previewName.textContent = fullName;
+
+            // Job Title (we'll use a combination of current study or work)
+            let title = 'Professional';
+            if (state.work.length > 0 && state.work[0].jobTitle) {
+                title = state.work[0].jobTitle;
+            } else if (currentTitleEl.value.trim()) {
+                title = currentTitleEl.value.trim();
+            }
+            previewJobTitle.textContent = title;
+
+            // Contact
+            const loc = addressEl.value.trim() || 'Location';
+            const phone = contactEl.value.trim() || 'Phone';
+            const email = emailEl.value.trim() || 'email@example.com';
+            previewLocation.textContent = '📍 ' + loc;
+            previewPhone.textContent = '📞 ' + phone;
+            previewEmail.textContent = '✉️ ' + email;
+
+            // Photo
+            if (state.photoBase64) {
+                previewPhotoWrap.innerHTML = `<img src="${state.photoBase64}" alt="Profile" />`;
+            } else {
+                previewPhotoWrap.innerHTML = `<span class="placeholder">📷</span>`;
+            }
+
+            // --- Summary ---
+            const summary = summaryEl.value.trim();
+            if (summary) {
+                previewSummaryText.textContent = summary;
+                previewSummaryText.className = '';
+            } else {
+                previewSummaryText.textContent = 'Add a professional summary in the form.';
+                previewSummaryText.className = 'preview-empty';
+            }
+
+            // --- Work Experience ---
+            const hasWork = state.work.some(w => w.company.trim() || w.jobTitle.trim());
+            if (hasWork) {
+                let html = '';
+                state.work.forEach(w => {
+                    if (!w.company.trim() && !w.jobTitle.trim()) return;
+                    html += `<div class="entry">
+                                <div class="entry-title">${escHtml(w.jobTitle)}</div>
+                                <div class="entry-sub">${escHtml(w.company)}</div>
+                                <div class="entry-meta">${escHtml(w.duration)}</div>`;
+                    if (w.duties.trim()) {
+                        const duties = w.duties.split('\n').filter(d => d.trim());
+                        if (duties.length) {
+                            html += `<ul class="entry-duties">`;
+                            duties.forEach(d => {
+                                const cleaned = d.replace(/^[\s•\-*]+/, '').trim();
+                                if (cleaned) html += `<li>${escHtml(cleaned)}</li>`;
+                            });
+                            html += `</ul>`;
+                        }
+                    }
+                    html += `</div>`;
+                });
+                previewWorkList.innerHTML = html;
+            } else {
+                previewWorkList.innerHTML = `<p class="preview-empty">No work experience added.</p>`;
+            }
+
+            // --- Education (High School + Tertiary) ---
+            let eduHtml = '';
+            const school = schoolNameEl.value.trim();
+            const grade = highestGradeEl.value;
+            const subjects = majorSubjectsEl.value.trim();
+            const year = schoolYearEl.value.trim();
+            if (school || grade || subjects || year) {
+                eduHtml += `<div class="entry">
+                                <div class="entry-title">${escHtml(school || 'School')}</div>
+                                <div class="entry-sub">${escHtml(grade)}</div>
+                                <div class="entry-meta">${escHtml(year)}</div>`;
+                if (subjects) {
+                    eduHtml += `<div style="font-size:13px;color:#475569;margin-top:2px;">Subjects: ${escHtml(subjects)}</div>`;
+                }
+                eduHtml += `</div>`;
+            }
+
+            // Tertiary
+            state.tertiary.forEach(t => {
+                if (!t.institution.trim() && !t.qualification.trim()) return;
+                eduHtml += `<div class="entry">
+                                <div class="entry-title">${escHtml(t.qualification)}</div>
+                                <div class="entry-sub">${escHtml(t.institution)}</div>
+                                <div class="entry-meta">${escHtml(t.year)}</div>`;
+                if (t.modules.trim()) {
+                    eduHtml += `<div style="font-size:13px;color:#475569;margin-top:2px;">Modules: ${escHtml(t.modules)}</div>`;
+                }
+                eduHtml += `</div>`;
+            });
+
+            if (eduHtml) {
+                previewEducationList.innerHTML = eduHtml;
+            } else {
+                previewEducationList.innerHTML = `<p class="preview-empty">No education details added.</p>`;
+            }
+
+            // --- Skills ---
+            const skills = skillsEl.value.trim();
+            if (skills) {
+                const items = skills.split(',').map(s => s.trim()).filter(Boolean);
+                previewSkillsText.textContent = items.join(' · ') || 'Add skills in the form.';
+                previewSkillsText.className = '';
+            } else {
+                previewSkillsText.textContent = 'Add skills in the form.';
+                previewSkillsText.className = 'preview-empty';
+            }
+
+            // --- NetCampus (Current Studies) ---
+            const inst = currentInstEl.value.trim();
+            const cTitle = currentTitleEl.value.trim();
+            const modules = currentModulesEl.value.trim();
+            const duration = currentDurationEl.value.trim();
+            const hasNetcampus = inst || cTitle || modules || duration;
+
+            if (hasNetcampus) {
+                let ncHtml = `<div class="entry">`;
+                if (cTitle) ncHtml += `<div class="entry-title">${escHtml(cTitle)}</div>`;
+                if (inst) ncHtml += `<div class="entry-sub">${escHtml(inst)}</div>`;
+                if (duration) ncHtml += `<div class="entry-meta">${escHtml(duration)}</div>`;
+                if (modules) {
+                    const modList = modules.split(',').map(m => m.trim()).filter(Boolean);
+                    if (modList.length) {
+                        ncHtml += `<ul class="entry-duties">`;
+                        modList.forEach(m => { ncHtml += `<li>${escHtml(m)}</li>`; });
+                        ncHtml += `</ul>`;
+                    }
+                }
+                ncHtml += `</div>`;
+                previewNetcampusContent.innerHTML = ncHtml;
+                // Orange accent
+                netcampusHeading.className = 'netcampus-accent';
+                netcampusHeading.innerHTML = 'NetCampus <span class="netcampus-badge">Current</span>';
+            } else {
+                previewNetcampusContent.innerHTML = `<p class="preview-empty">No current studies added.</p>`;
+                netcampusHeading.className = '';
+                netcampusHeading.innerHTML = 'NetCampus';
+            }
+
+            // --- References ---
+            const hasRefs = state.references.some(r => r.name.trim() || r.organization.trim());
+            if (hasRefs) {
+                let refHtml = '';
+                state.references.forEach(r => {
+                    if (!r.name.trim() && !r.organization.trim()) return;
+                    refHtml += `<div class="entry">
+                                    <div class="entry-title">${escHtml(r.name)}</div>
+                                    <div class="entry-sub">${escHtml(r.position)} ${r.organization ? '· ' + escHtml(r.organization) : ''}</div>
+                                    <div class="entry-meta">${escHtml(r.phone)}</div>
+                                </div>`;
+                });
+                if (refHtml) {
+                    previewRefList.innerHTML = refHtml;
+                } else {
+                    previewRefList.innerHTML = `<p class="preview-empty">No references added.</p>`;
+                }
+            } else {
+                previewRefList.innerHTML = `<p class="preview-empty">No references added.</p>`;
+            }
+        }
+
+        // ============================================================
+        // 10. FULL NAME AUTO-SPLIT
+        // ============================================================
+        fullNameEl.addEventListener('input', function() {
+            const parts = this.value.trim().split(/\s+/);
+            if (parts.length >= 2) {
+                firstNameEl.value = parts.slice(0, -1).join(' ');
+                surnameEl.value = parts[parts.length - 1];
+            } else if (parts.length === 1) {
+                firstNameEl.value = parts[0];
+                surnameEl.value = '';
+            }
+            updatePreview();
+        });
+
+        // ============================================================
+        // 11. BIND ALL INPUTS TO PREVIEW
+        // ============================================================
+        const allInputs = [
+            firstNameEl, surnameEl, dobEl, nationalityEl, genderEl, homeLangEl,
+            criminalEl, driversEl, disabilitiesEl, contactEl, altEl, emailEl,
+            addressEl, schoolNameEl, highestGradeEl, majorSubjectsEl, schoolYearEl,
+            currentInstEl, currentTitleEl, currentModulesEl, currentDurationEl,
+            summaryEl, skillsEl
+        ];
+
+        allInputs.forEach(el => {
+            el.addEventListener('input', updatePreview);
+            el.addEventListener('change', updatePreview);
+        });
+
+        // ============================================================
+        // 12. VALIDATION
+        // ============================================================
+        function validateForm() {
+            let valid = true;
+
+            // Helper: mark field
+            function validateField(el, condition) {
+                const group = el.closest('.form-group');
+                if (!condition) {
+                    group.classList.add('invalid');
+                    valid = false;
+                } else {
+                    group.classList.remove('invalid');
+                }
+                return condition;
+            }
+
+            // Required: Full Name (we use firstName + surname)
+            const fn = firstNameEl.value.trim();
+            const sn = surnameEl.value.trim();
+            const fnGroup = firstNameEl.closest('.form-group');
+            const snGroup = surnameEl.closest('.form-group');
+            if (!fn) { fnGroup.classList.add('invalid');
+                valid = false; } else { fnGroup.classList.remove('invalid'); }
+            if (!sn) { snGroup.classList.add('invalid');
+                valid = false; } else { snGroup.classList.remove('invalid'); }
+
+            validateField(dobEl, !!dobEl.value.trim());
+            validateField(contactEl, !!contactEl.value.trim());
+            validateField(emailEl, !!emailEl.value.trim() && emailEl.validity.valid);
+
+            return valid;
+        }
+
+        // ============================================================
+        // 13. PDF DOWNLOAD
+        // ============================================================
+        downloadBtn.addEventListener('click', function() {
+            // Validate
+            if (!validateForm()) {
+                showToast('Please fill in all required fields (*).', 'error', 5000);
+                // Scroll to first invalid field
+                const firstInvalid = document.querySelector('.form-group.invalid');
+                if (firstInvalid) {
+                    firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    const inp = firstInvalid.querySelector('input, select, textarea');
+                    if (inp) inp.focus();
+                }
+                return;
+            }
+
+            // Disable button during generation
+            this.disabled = true;
+            this.innerHTML = '<span class="spinner"></span> Generating PDF...';
+
+            const previewEl = document.getElementById('cvPreview');
+
+            // Options for html2pdf
+            const opt = {
+                margin: [10, 10, 10, 10],
+                filename: 'CV_Netcampus.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: {
+                    scale: 2,
+                    useCORS: true,
+                    letterRendering: true,
+                    scrollY: 0,
+                },
+                jsPDF: {
+                    unit: 'mm',
+                    format: 'a4',
+                    orientation: 'portrait'
+                },
+                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+            };
+
+            // Clone preview for PDF to avoid interference
+            const clone = previewEl.cloneNode(true);
+            // Ensure images are loaded
+            const imgs = clone.querySelectorAll('img');
+            imgs.forEach(img => {
+                if (img.src && img.src.startsWith('data:')) {
+                    // already base64, fine
+                }
+            });
+
+            // Create a temporary container
+            const wrapper = document.createElement('div');
+            wrapper.style.cssText =
+                'position:fixed;left:-9999px;top:0;width:210mm;padding:10mm;background:#fff;font-family:Arial,Helvetica,sans-serif;font-size:14px;';
+            wrapper.appendChild(clone);
+            document.body.appendChild(wrapper);
+
+            // Adjust styles for PDF
+            const styleFix = document.createElement('style');
+            styleFix.textContent = `
+                        .preview-empty { color: #94a3b8; font-style: italic; }
+                        .preview-section { margin-bottom: 14px; }
+                        .preview-section h3 { font-size: 14px; font-weight: 700; border-bottom: 2px solid #1e293b; padding-bottom: 3px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.3px; }
+                        .preview-section h3.netcampus-accent { border-bottom-color: #F97316; color: #F97316; }
+                        .preview-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 2px solid #1e293b; }
+                        .preview-name { font-size: 28px; font-weight: 700; line-height: 1.1; }
+                        .preview-title { font-size: 16px; color: #475569; }
+                        .preview-contact { font-size: 12px; color: #475569; display: flex; flex-wrap: wrap; gap: 4px 14px; }
+                        .preview-photo { width: 80px; height: 80px; border-radius: 50%; border: 2px solid #e2e8f0; overflow: hidden; flex-shrink: 0; }
+                        .preview-photo img { width: 100%; height: 100%; object-fit: cover; }
+                        .preview-photo .placeholder { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; color: #94a3b8; font-size: 11px; background: #f1f5f9; }
+                        .entry { margin-bottom: 10px; }
+                        .entry-title { font-weight: 700; font-size: 14px; }
+                        .entry-sub { font-weight: 600; color: #334155; font-size: 13px; }
+                        .entry-meta { font-size: 12px; color: #64748b; }
+                        .entry-duties { list-style: none; padding-left: 0; margin-top: 2px; }
+                        .entry-duties li { padding-left: 16px; position: relative; font-size: 13px; line-height: 1.5; }
+                        .entry-duties li::before { content: "•"; position: absolute; left: 0; color: #475569; }
+                        ul { list-style: none; padding-left: 0; }
+                        .netcampus-badge { display: inline-block; background: #F97316; color: #fff; font-size: 10px; font-weight: 700; padding: 1px 10px; border-radius: 20px; text-transform: uppercase; margin-left: 6px; }
+                    `;
+            wrapper.appendChild(styleFix);
+
+            html2pdf()
+                .set(opt)
+                .from(wrapper)
+                .save()
+                .then(() => {
+                    document.body.removeChild(wrapper);
+                    downloadBtn.disabled = false;
+                    downloadBtn.innerHTML = '⬇️ Download PDF';
+                    showToast('PDF downloaded successfully!', 'success');
+                })
+                .catch(err => {
+                    console.error('PDF error:', err);
+                    document.body.removeChild(wrapper);
+                    downloadBtn.disabled = false;
+                    downloadBtn.innerHTML = '⬇️ Download PDF';
+                    showToast('Error generating PDF. Please try again.', 'error');
+                });
+        });
+
+        // ============================================================
+        // 14. RESET PREVIEW (just reloads preview state)
+        // ============================================================
+        resetBtn.addEventListener('click', function() {
+            // Reset all form fields to default
+            // Personal
+            firstNameEl.value = '';
+            surnameEl.value = '';
+            fullNameEl.value = '';
+            dobEl.value = '';
+            nationalityEl.value = 'South African';
+            genderEl.value = '';
+            homeLangEl.value = '';
+            criminalEl.value = 'No';
+            driversEl.value = 'None';
+            disabilitiesEl.value = '';
+            contactEl.value = '';
+            altEl.value = '';
+            emailEl.value = '';
+            addressEl.value = '';
+            // Photo
+            state.photoBase64 = '';
+            state.photoFile = null;
+            photoBase64Input.value = '';
+            photoPreview.innerHTML = `<span class="placeholder">📷<br />Photo</span>`;
+            photoStatus.textContent = 'No file selected';
+            removePhotoBtn.style.display = 'none';
+            photoInput.value = '';
+            // School
+            schoolNameEl.value = '';
+            highestGradeEl.value = '';
+            majorSubjectsEl.value = '';
+            schoolYearEl.value = '';
+            // Current studies
+            currentInstEl.value = 'Netcampus';
+            currentTitleEl.value = 'Netcampus Internship Programme 2026';
+            currentModulesEl.value =
+                'Soft Skills, IT Fundamentals, CompTIA Network+, Microsoft Azure Fundamentals AZ-900, Microsoft Azure Associate AZ-104';
+            currentDurationEl.value = '12 Months';
+            // Summary & Skills
+            summaryEl.value = '';
+            skillsEl.value = '';
+
+            // Repeaters: reset to defaults
+            state.tertiary = [createTertiaryItem()];
+            state.work = [createWorkItem()];
+            state.references = [
+                createRefItem({ name: 'Dr. Sarah Ndlovu', organization: 'University of Cape Town',
+                    position: 'Senior Lecturer', phone: '+27 82 111 2222' }),
+                createRefItem({ name: 'Mr. James Pillay', organization: 'TechSolutions SA', position: 'CTO',
+                    phone: '+27 83 333 4444' })
+            ];
+
+            renderTertiary();
+            renderWork();
+            renderReferences();
+            updatePreview();
+
+            // Remove invalid states
+            document.querySelectorAll('.form-group.invalid').forEach(g => g.classList.remove('invalid'));
+
+            showToast('Preview reset to defaults.', 'info');
+        });
+
+        // ============================================================
+        // 15. INIT
+        // ============================================================
+        function init() {
+            // Set default date of birth to 2000-01-01
+            if (!dobEl.value) dobEl.value = '2000-01-01';
+
+            // Initialize repeaters
+            state.tertiary = [createTertiaryItem()];
+            state.work = [createWorkItem()];
+            state.references = [
+                createRefItem({ name: 'Dr. Sarah Ndlovu', organization: 'University of Cape Town',
+                    position: 'Senior Lecturer', phone: '+27 82 111 2222' }),
+                createRefItem({ name: 'Mr. James Pillay', organization: 'TechSolutions SA', position: 'CTO',
+                    phone: '+27 83 333 4444' })
+            ];
+
+            renderTertiary();
+            renderWork();
+            renderReferences();
+            updatePreview();
+
+            console.log('✅ CV Builder initialized.');
+        }
+
+        init();
+    </script>
+
+</body>
+</html>
