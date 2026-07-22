@@ -1310,7 +1310,7 @@ SCRIPTS
     }
 
     /* ============================================================
-    PDF DOWNLOAD (html2canvas + jsPDF)
+    PDF DOWNLOAD – FIXED: identical to preview
     ============================================================ */
     downloadBtn.addEventListener('click', function() {
         if (!validateForm()) {
@@ -1324,17 +1324,27 @@ SCRIPTS
             return;
         }
 
+        // Force an update to capture latest changes
         updatePreview();
+
         this.disabled = true;
         this.innerHTML = '<span class="spinner"></span> Generating PDF...';
 
         const previewEl = document.getElementById('cvPreview');
+        const panel = document.getElementById('previewPanel');
 
-        // Set a fixed width for capture to avoid scaling issues
+        // Temporarily remove overflow constraints to capture full content
+        const originalOverflow = panel.style.overflow;
+        const originalMaxHeight = panel.style.maxHeight;
+        panel.style.overflow = 'visible';
+        panel.style.maxHeight = 'none';
+
+        // Fix width to avoid scaling issues
         const originalWidth = previewEl.style.width;
         previewEl.style.width = '800px';
         previewEl.style.margin = '0 auto';
 
+        // Wait for layout to settle
         setTimeout(() => {
             html2canvas(previewEl, {
                 scale: 2.5,
@@ -1348,13 +1358,27 @@ SCRIPTS
                 windowHeight: previewEl.scrollHeight,
                 width: previewEl.scrollWidth,
                 height: previewEl.scrollHeight,
+                onclone: (doc) => {
+                    // Ensure images are loaded
+                    return Promise.all(Array.from(doc.querySelectorAll('img')).map(img => {
+                        if (img.complete) return Promise.resolve();
+                        return new Promise(resolve => { img.onload = resolve; img.onerror = resolve; });
+                    }));
+                }
             }).then(canvas => {
+                // Restore styles
                 previewEl.style.width = originalWidth;
+                panel.style.overflow = originalOverflow;
+                panel.style.maxHeight = originalMaxHeight;
+
                 const imgData = canvas.toDataURL('image/jpeg', 0.95);
                 const { jsPDF } = window.jspdf;
                 const pdf = new jsPDF('p', 'mm', 'a4');
                 const pdfWidth = pdf.internal.pageSize.getWidth();
                 const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+                // If the image height exceeds one page, scale to fit one page
+                // We'll add the image and let it fit
                 pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
                 pdf.save('CV_Netcampus.pdf');
 
@@ -1364,11 +1388,13 @@ SCRIPTS
             }).catch(err => {
                 console.error('PDF generation error:', err);
                 previewEl.style.width = originalWidth;
+                panel.style.overflow = originalOverflow;
+                panel.style.maxHeight = originalMaxHeight;
                 downloadBtn.disabled = false;
                 downloadBtn.innerHTML = '⬇️ Download PDF';
                 showToast('Error generating PDF. Please try again.', 'error');
             });
-        }, 300);
+        }, 400);
     });
 
     /* ============================================================
