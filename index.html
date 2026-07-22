@@ -1430,11 +1430,14 @@ SCRIPTS
         summaryEl.value = '';
         skillsEl.value = '';
 
+        // Pre-fill work and references with samples
         state.tertiary = [createTertiaryItem()];
-        state.work = [createWorkItem()];
+        state.work = [
+            createWorkItem({ company: 'Heart Solutions', jobTitle: 'Technician', duration: '2022 - Present', duties: '• System support\n• Hardware maintenance' })
+        ];
         state.references = [
-            createRefItem({ name: 'Dr. Sarah Ndlovu', organization: 'University of Cape Town', position: 'Senior Lecturer', phone: '+27 82 111 2222' }),
-            createRefItem({ name: 'Mr. James Pillay', organization: 'TechSolutions SA', position: 'CTO', phone: '+27 83 333 4444' })
+            createRefItem({ name: 'Pulani Zwane', organization: 'Netcampus', position: 'Project Manager', phone: '+27 82 111 2222' }),
+            createRefItem({ name: '', organization: 'Netcampus', position: 'Facilitator', phone: '+27 83 333 4444' })
         ];
 
         renderTertiary();
@@ -1451,16 +1454,26 @@ SCRIPTS
     ============================================================ */
     function init() {
         if (!dobEl.value) dobEl.value = '2000-01-01';
+
+        // Pre‑fill work and references with samples so they appear immediately
         state.tertiary = [createTertiaryItem()];
-        state.work = [createWorkItem()];
-        state.references = [
-            createRefItem({ name: 'Dr. Sarah Ndlovu', organization: 'University of Cape Town', position: 'Senior Lecturer', phone: '+27 82 111 2222' }),
-            createRefItem({ name: 'Mr. James Pillay', organization: 'TechSolutions SA', position: 'CTO', phone: '+27 83 333 4444' })
+        state.work = [
+            createWorkItem({ company: 'Heart Solutions', jobTitle: 'Technician', duration: '2022 - Present', duties: '• System support\n• Hardware maintenance' })
         ];
+        state.references = [
+            createRefItem({ name: 'Pulani Zwane', organization: 'Netcampus', position: 'Project Manager', phone: '+27 82 111 2222' }),
+            createRefItem({ name: 'Dimakatso', organization: 'Netcampus', position: 'Facilitator', phone: '+27 83 333 4444' })
+        ];
+
+        // Also pre‑fill skills and summary with samples
+        skillsEl.value = 'Technical skills, Communication skills';
+        summaryEl.value = 'Professional and goal driven';
+
         renderTertiary();
         renderWork();
         renderReferences();
         updatePreview();
+
         console.log('✅ CV Builder initialized.');
     }
     init();
