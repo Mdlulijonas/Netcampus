@@ -1721,53 +1721,62 @@
 
             const previewEl = document.getElementById('cvPreview');
 
-            // Use html2canvas to capture the preview element
-            html2canvas(previewEl, {
-                scale: 2, // high resolution
-                useCORS: true,
-                allowTaint: false,
-                logging: false,
-                letterRendering: true,
-                scrollY: 0,
-                windowWidth: previewEl.scrollWidth,
-                width: previewEl.scrollWidth,
-                height: previewEl.scrollHeight,
-                onclone: function(doc) {
-                    // Ensure all images are loaded
-                    const imgs = doc.querySelectorAll('img');
-                    return Promise.all(Array.from(imgs).map(img => {
-                        if (img.complete) return Promise.resolve();
-                        return new Promise((resolve) => {
-                            img.onload = resolve;
-                            img.onerror = resolve;
-                        });
-                    }));
-                }
-            }).then(canvas => {
-                // Convert canvas to image
-                const imgData = canvas.toDataURL('image/jpeg', 0.95);
-
-                // Create PDF with jsPDF
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF('p', 'mm', 'a4');
-                const pdfWidth = pdf.internal.pageSize.getWidth();
-                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-
-                // Add image to fit A4 page
-                pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-
-                // Save
-                pdf.save('CV_Netcampus.pdf');
-
-                downloadBtn.disabled = false;
-                downloadBtn.innerHTML = '⬇️ Download PDF';
-                showToast('PDF downloaded successfully!', 'success');
-            }).catch(err => {
-                console.error('PDF generation error:', err);
-                downloadBtn.disabled = false;
-                downloadBtn.innerHTML = '⬇️ Download PDF';
-                showToast('Error generating PDF. Please try again.', 'error');
+            // Ensure all images are loaded
+            const imgs = previewEl.querySelectorAll('img');
+            const imgPromises = Array.from(imgs).map(img => {
+                if (img.complete) return Promise.resolve();
+                return new Promise(resolve => {
+                    img.onload = resolve;
+                    img.onerror = resolve;
+                });
             });
+
+            // Wait a short moment for any rendering updates
+            setTimeout(() => {
+                // Use html2canvas with full scroll dimensions
+                html2canvas(previewEl, {
+                    scale: 2.5,
+                    useCORS: true,
+                    allowTaint: false,
+                    logging: false,
+                    letterRendering: true,
+                    scrollX: 0,
+                    scrollY: 0,
+                    windowWidth: previewEl.scrollWidth,
+                    windowHeight: previewEl.scrollHeight,
+                    width: previewEl.scrollWidth,
+                    height: previewEl.scrollHeight,
+                    onclone: function(doc) {
+                        // Ensure images are loaded in the clone
+                        return Promise.all(Array.from(doc.querySelectorAll('img')).map(img => {
+                            if (img.complete) return Promise.resolve();
+                            return new Promise(resolve => { img.onload = resolve; img
+                                .onerror = resolve; });
+                        }));
+                    }
+                }).then(canvas => {
+                    // Convert to image
+                    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+
+                    // Create PDF
+                    const { jsPDF } = window.jspdf;
+                    const pdf = new jsPDF('p', 'mm', 'a4');
+                    const pdfWidth = pdf.internal.pageSize.getWidth();
+                    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+                    pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+                    pdf.save('CV_Netcampus.pdf');
+
+                    downloadBtn.disabled = false;
+                    downloadBtn.innerHTML = '⬇️ Download PDF';
+                    showToast('PDF downloaded successfully!', 'success');
+                }).catch(err => {
+                    console.error('PDF generation error:', err);
+                    downloadBtn.disabled = false;
+                    downloadBtn.innerHTML = '⬇️ Download PDF';
+                    showToast('Error generating PDF. Please try again.', 'error');
+                });
+            }, 400); // small delay to let updates settle
         });
 
         // ============================================================
