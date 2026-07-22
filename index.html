@@ -1310,7 +1310,7 @@ SCRIPTS
     }
 
     /* ============================================================
-    PDF DOWNLOAD – FIXED: identical to preview
+    PDF DOWNLOAD – Cloning full content to capture all sections
     ============================================================ */
     downloadBtn.addEventListener('click', function() {
         if (!validateForm()) {
@@ -1331,22 +1331,26 @@ SCRIPTS
         this.innerHTML = '<span class="spinner"></span> Generating PDF...';
 
         const previewEl = document.getElementById('cvPreview');
-        const panel = document.getElementById('previewPanel');
 
-        // Temporarily remove overflow constraints to capture full content
-        const originalOverflow = panel.style.overflow;
-        const originalMaxHeight = panel.style.maxHeight;
-        panel.style.overflow = 'visible';
-        panel.style.maxHeight = 'none';
+        // Clone the entire preview element to avoid layout constraints
+        const clone = previewEl.cloneNode(true);
+        // Ensure all images in clone are loaded (they have src from base64)
+        // We'll append the clone to a temporary container with no size limits
+        const tempContainer = document.createElement('div');
+        tempContainer.style.cssText = 'position:fixed;left:-9999px;top:0;width:800px;background:#fff;padding:0;margin:0;z-index:-1;';
+        tempContainer.appendChild(clone);
+        document.body.appendChild(tempContainer);
 
-        // Fix width to avoid scaling issues
-        const originalWidth = previewEl.style.width;
-        previewEl.style.width = '800px';
-        previewEl.style.margin = '0 auto';
+        // Wait for images to load in the clone (they should be same as original)
+        const imgs = clone.querySelectorAll('img');
+        const imgPromises = Array.from(imgs).map(img => {
+            if (img.complete) return Promise.resolve();
+            return new Promise(resolve => { img.onload = resolve; img.onerror = resolve; });
+        });
 
-        // Wait for layout to settle
-        setTimeout(() => {
-            html2canvas(previewEl, {
+        Promise.all(imgPromises).then(() => {
+            // Now capture the clone
+            html2canvas(clone, {
                 scale: 2.5,
                 useCORS: true,
                 allowTaint: false,
@@ -1354,31 +1358,19 @@ SCRIPTS
                 letterRendering: true,
                 scrollX: 0,
                 scrollY: 0,
-                windowWidth: previewEl.scrollWidth,
-                windowHeight: previewEl.scrollHeight,
-                width: previewEl.scrollWidth,
-                height: previewEl.scrollHeight,
-                onclone: (doc) => {
-                    // Ensure images are loaded
-                    return Promise.all(Array.from(doc.querySelectorAll('img')).map(img => {
-                        if (img.complete) return Promise.resolve();
-                        return new Promise(resolve => { img.onload = resolve; img.onerror = resolve; });
-                    }));
-                }
+                windowWidth: clone.scrollWidth,
+                windowHeight: clone.scrollHeight,
+                width: clone.scrollWidth,
+                height: clone.scrollHeight,
             }).then(canvas => {
-                // Restore styles
-                previewEl.style.width = originalWidth;
-                panel.style.overflow = originalOverflow;
-                panel.style.maxHeight = originalMaxHeight;
+                // Remove temporary container
+                document.body.removeChild(tempContainer);
 
                 const imgData = canvas.toDataURL('image/jpeg', 0.95);
                 const { jsPDF } = window.jspdf;
                 const pdf = new jsPDF('p', 'mm', 'a4');
                 const pdfWidth = pdf.internal.pageSize.getWidth();
                 const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-
-                // If the image height exceeds one page, scale to fit one page
-                // We'll add the image and let it fit
                 pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
                 pdf.save('CV_Netcampus.pdf');
 
@@ -1387,14 +1379,18 @@ SCRIPTS
                 showToast('PDF downloaded successfully!', 'success');
             }).catch(err => {
                 console.error('PDF generation error:', err);
-                previewEl.style.width = originalWidth;
-                panel.style.overflow = originalOverflow;
-                panel.style.maxHeight = originalMaxHeight;
+                document.body.removeChild(tempContainer);
                 downloadBtn.disabled = false;
                 downloadBtn.innerHTML = '⬇️ Download PDF';
                 showToast('Error generating PDF. Please try again.', 'error');
             });
-        }, 400);
+        }).catch(err => {
+            console.error('Image loading error:', err);
+            document.body.removeChild(tempContainer);
+            downloadBtn.disabled = false;
+            downloadBtn.innerHTML = '⬇️ Download PDF';
+            showToast('Error loading images. Please try again.', 'error');
+        });
     });
 
     /* ============================================================
