@@ -5,9 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CV Builder | Netcampus</title>
 
-    <!-- ============================================================
-    STYLES
-    ============================================================ -->
     <style>
         /* ----- RESET & LAYOUT ----- */
         * {
@@ -1006,8 +1003,8 @@ SCRIPTS
 
     function renderReferences() {
         if (state.references.length === 0) {
-            state.references.push(createRefItem({ name: 'Dr. Sarah Ndlovu', organization: 'University of Cape Town', position: 'Senior Lecturer', phone: '+27 82 111 2222' }));
-            state.references.push(createRefItem({ name: 'Mr. James Pillay', organization: 'TechSolutions SA', position: 'CTO', phone: '+27 83 333 4444' }));
+            state.references.push(createRefItem({ name: 'Pulani Zwane', organization: 'Netcampus', position: 'Project Manager', phone: '+27 82 111 2222' }));
+            state.references.push(createRefItem({ name: 'Dimakatso', organization: 'Netcampus', position: 'Facilitator', phone: '+27 83 333 4444' }));
         }
         refContainer.innerHTML = state.references.map((item, idx) => `
             <div class="repeater-item" data-id="${item.id}">
@@ -1310,7 +1307,7 @@ SCRIPTS
     }
 
     /* ============================================================
-    PDF DOWNLOAD – Cloning full content to capture all sections
+    PDF DOWNLOAD – FIXED: full-height clone capture
     ============================================================ */
     downloadBtn.addEventListener('click', function() {
         if (!validateForm()) {
@@ -1324,72 +1321,101 @@ SCRIPTS
             return;
         }
 
-        // Force an update to capture latest changes
         updatePreview();
-
         this.disabled = true;
         this.innerHTML = '<span class="spinner"></span> Generating PDF...';
 
         const previewEl = document.getElementById('cvPreview');
 
-        // Clone the entire preview element to avoid layout constraints
+        // Clone the preview without any size restrictions
         const clone = previewEl.cloneNode(true);
-        // Ensure all images in clone are loaded (they have src from base64)
-        // We'll append the clone to a temporary container with no size limits
+        clone.style.overflow = 'visible';
+        clone.style.height = 'auto';
+        clone.style.maxHeight = 'none';
+        clone.style.width = '800px';
+        clone.style.margin = '0 auto';
+        clone.style.padding = '20px';
+        clone.style.background = '#fff';
+
+        // Create a hidden container
         const tempContainer = document.createElement('div');
-        tempContainer.style.cssText = 'position:fixed;left:-9999px;top:0;width:800px;background:#fff;padding:0;margin:0;z-index:-1;';
+        tempContainer.style.cssText = 'position:fixed;left:-9999px;top:0;width:800px;background:#fff;padding:0;margin:0;z-index:-1;overflow:visible;';
         tempContainer.appendChild(clone);
         document.body.appendChild(tempContainer);
 
-        // Wait for images to load in the clone (they should be same as original)
+        // Wait for images to load
         const imgs = clone.querySelectorAll('img');
-        const imgPromises = Array.from(imgs).map(img => {
+        Promise.all(Array.from(imgs).map(img => {
             if (img.complete) return Promise.resolve();
             return new Promise(resolve => { img.onload = resolve; img.onerror = resolve; });
-        });
+        })).then(() => {
+            // Allow layout to settle
+            setTimeout(() => {
+                html2canvas(clone, {
+                    scale: 2.5,
+                    useCORS: true,
+                    allowTaint: false,
+                    logging: false,
+                    letterRendering: true,
+                    width: clone.scrollWidth,
+                    height: clone.scrollHeight,
+                    windowWidth: clone.scrollWidth,
+                    windowHeight: clone.scrollHeight,
+                }).then(canvas => {
+                    document.body.removeChild(tempContainer);
+                    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                    const { jsPDF } = window.jspdf;
+                    const pdf = new jsPDF('p', 'mm', 'a4');
+                    const pdfWidth = pdf.internal.pageSize.getWidth();
+                    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+                    pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+                    pdf.save('CV_Netcampus.pdf');
 
-        Promise.all(imgPromises).then(() => {
-            // Now capture the clone
-            html2canvas(clone, {
-                scale: 2.5,
-                useCORS: true,
-                allowTaint: false,
-                logging: false,
-                letterRendering: true,
-                scrollX: 0,
-                scrollY: 0,
-                windowWidth: clone.scrollWidth,
-                windowHeight: clone.scrollHeight,
-                width: clone.scrollWidth,
-                height: clone.scrollHeight,
-            }).then(canvas => {
-                // Remove temporary container
-                document.body.removeChild(tempContainer);
+                    downloadBtn.disabled = false;
+                    downloadBtn.innerHTML = '⬇️ Download PDF';
+                    showToast('PDF downloaded successfully!', 'success');
+                }).catch(err => {
+                    console.error('PDF error:', err);
+                    document.body.removeChild(tempContainer);
+                    downloadBtn.disabled = false;
+                    downloadBtn.innerHTML = '⬇️ Download PDF';
+                    showToast('Error generating PDF. Please try again.', 'error');
+                });
+            }, 300);
+        }).catch(() => {
+            // If images fail, still try to capture
+            setTimeout(() => {
+                html2canvas(clone, {
+                    scale: 2.5,
+                    useCORS: true,
+                    allowTaint: false,
+                    logging: false,
+                    letterRendering: true,
+                    width: clone.scrollWidth,
+                    height: clone.scrollHeight,
+                    windowWidth: clone.scrollWidth,
+                    windowHeight: clone.scrollHeight,
+                }).then(canvas => {
+                    document.body.removeChild(tempContainer);
+                    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                    const { jsPDF } = window.jspdf;
+                    const pdf = new jsPDF('p', 'mm', 'a4');
+                    const pdfWidth = pdf.internal.pageSize.getWidth();
+                    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+                    pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+                    pdf.save('CV_Netcampus.pdf');
 
-                const imgData = canvas.toDataURL('image/jpeg', 0.95);
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF('p', 'mm', 'a4');
-                const pdfWidth = pdf.internal.pageSize.getWidth();
-                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-                pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-                pdf.save('CV_Netcampus.pdf');
-
-                downloadBtn.disabled = false;
-                downloadBtn.innerHTML = '⬇️ Download PDF';
-                showToast('PDF downloaded successfully!', 'success');
-            }).catch(err => {
-                console.error('PDF generation error:', err);
-                document.body.removeChild(tempContainer);
-                downloadBtn.disabled = false;
-                downloadBtn.innerHTML = '⬇️ Download PDF';
-                showToast('Error generating PDF. Please try again.', 'error');
-            });
-        }).catch(err => {
-            console.error('Image loading error:', err);
-            document.body.removeChild(tempContainer);
-            downloadBtn.disabled = false;
-            downloadBtn.innerHTML = '⬇️ Download PDF';
-            showToast('Error loading images. Please try again.', 'error');
+                    downloadBtn.disabled = false;
+                    downloadBtn.innerHTML = '⬇️ Download PDF';
+                    showToast('PDF downloaded successfully!', 'success');
+                }).catch(err => {
+                    console.error('PDF error:', err);
+                    document.body.removeChild(tempContainer);
+                    downloadBtn.disabled = false;
+                    downloadBtn.innerHTML = '⬇️ Download PDF';
+                    showToast('Error generating PDF. Please try again.', 'error');
+                });
+            }, 300);
         });
     });
 
@@ -1397,7 +1423,7 @@ SCRIPTS
     RESET
     ============================================================ */
     resetBtn.addEventListener('click', function() {
-        // Reset all fields
+        // Reset all fields to empty/default
         firstNameEl.value = '';
         surnameEl.value = '';
         fullNameEl.value = '';
@@ -1430,14 +1456,14 @@ SCRIPTS
         summaryEl.value = '';
         skillsEl.value = '';
 
-        // Pre-fill work and references with samples
+        // Pre‑fill work and references with samples
         state.tertiary = [createTertiaryItem()];
         state.work = [
-            createWorkItem({ company: 'Heart Solutions', jobTitle: 'Technician', duration: '2022 - Present', duties: '• System support\n• Hardware maintenance' })
+            createWorkItem({ company: 'Heart Solutions', jobTitle: 'Technician', duration: '2020 - Present', duties: '• System support\n• Hardware maintenance' })
         ];
         state.references = [
             createRefItem({ name: 'Pulani Zwane', organization: 'Netcampus', position: 'Project Manager', phone: '+27 82 111 2222' }),
-            createRefItem({ name: '', organization: 'Netcampus', position: 'Facilitator', phone: '+27 83 333 4444' })
+            createRefItem({ name: 'Dimakatso', organization: 'Netcampus', position: 'Facilitator', phone: '+27 83 333 4444' })
         ];
 
         renderTertiary();
@@ -1455,17 +1481,15 @@ SCRIPTS
     function init() {
         if (!dobEl.value) dobEl.value = '2000-01-01';
 
-        // Pre‑fill work and references with samples so they appear immediately
+        // Pre‑fill work, references, skills, summary with samples
         state.tertiary = [createTertiaryItem()];
         state.work = [
-            createWorkItem({ company: 'Heart Solutions', jobTitle: 'Technician', duration: '2022 - Present', duties: '• System support\n• Hardware maintenance' })
+            createWorkItem({ company: 'Heart Solutions', jobTitle: 'Technician', duration: '2020 - Present', duties: '• System support\n• Hardware maintenance' })
         ];
         state.references = [
             createRefItem({ name: 'Pulani Zwane', organization: 'Netcampus', position: 'Project Manager', phone: '+27 82 111 2222' }),
             createRefItem({ name: 'Dimakatso', organization: 'Netcampus', position: 'Facilitator', phone: '+27 83 333 4444' })
         ];
-
-        // Also pre‑fill skills and summary with samples
         skillsEl.value = 'Technical skills, Communication skills';
         summaryEl.value = 'Professional and goal driven';
 
