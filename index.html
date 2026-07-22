@@ -1037,8 +1037,9 @@
     SCRIPTS
     ============================================================ -->
 
-    <!-- html2pdf library for PDF generation -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- html2canvas and jsPDF (from cdn) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <script>
         /* ============================================================
@@ -1127,7 +1128,6 @@
         function showToast(msg, type = 'info', duration = 4000) {
             toast.textContent = msg;
             toast.className = 'toast ' + type;
-            // force reflow
             void toast.offsetWidth;
             toast.classList.add('show');
             clearTimeout(toast._timer);
@@ -1145,7 +1145,6 @@
             const file = this.files[0];
             if (!file) return;
 
-            // Validate type
             const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
             if (!validTypes.includes(file.type)) {
                 showToast('Please upload a JPG or PNG image.', 'error');
@@ -1153,7 +1152,6 @@
                 return;
             }
 
-            // Validate size (2MB)
             if (file.size > 2 * 1024 * 1024) {
                 showToast('Image must be smaller than 2MB.', 'error');
                 this.value = '';
@@ -1162,21 +1160,18 @@
 
             state.photoFile = file;
 
-            // Show preview locally
             const reader = new FileReader();
             reader.onload = function(ev) {
                 const dataUrl = ev.target.result;
                 photoPreview.innerHTML = `<img src="${dataUrl}" alt="Profile photo" />`;
                 photoStatus.textContent = '✅ Photo loaded';
                 removePhotoBtn.style.display = 'inline-block';
-                // Store base64 for PDF
                 state.photoBase64 = dataUrl;
                 photoBase64Input.value = dataUrl;
                 updatePreview();
             };
             reader.readAsDataURL(file);
 
-            // Also upload to server via PHP
             uploadPhoto(file);
         });
 
@@ -1202,7 +1197,6 @@
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
-                        // Server returned base64, use it if local one failed
                         if (data.base64 && !state.photoBase64) {
                             state.photoBase64 = data.base64;
                             photoBase64Input.value = data.base64;
@@ -1213,12 +1207,10 @@
                         console.log('Photo uploaded:', data.file);
                     } else {
                         console.warn('Photo upload warning:', data.error);
-                        // Still keep local preview
                     }
                 })
                 .catch(err => {
                     console.warn('Photo upload error:', err);
-                    // Local preview remains
                 });
         }
 
@@ -1263,7 +1255,6 @@
         // ============================================================
         function renderTertiary() {
             if (state.tertiary.length === 0) {
-                // Add one empty by default
                 state.tertiary.push(createTertiaryItem());
             }
             tertiaryContainer.innerHTML = state.tertiary.map((item, idx) => `
@@ -1292,7 +1283,6 @@
                     </div>
                 `).join('');
 
-            // Attach events
             tertiaryContainer.querySelectorAll('.remove-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const id = this.dataset.id;
@@ -1305,7 +1295,6 @@
                 });
             });
 
-            // Bind input events
             tertiaryContainer.querySelectorAll('.tertiary-inst').forEach((el, i) => {
                 el.addEventListener('input', function() { state.tertiary[i].institution = this.value;
                     updatePreview(); });
@@ -1386,7 +1375,6 @@
 
         function renderReferences() {
             if (state.references.length === 0) {
-                // Pre-fill 2 defaults
                 state.references.push(createRefItem({ name: 'Dr. Sarah Ndlovu', organization: 'University of Cape Town',
                     position: 'Senior Lecturer', phone: '+27 82 111 2222' }));
                 state.references.push(createRefItem({ name: 'Mr. James Pillay', organization: 'TechSolutions SA',
@@ -1488,7 +1476,6 @@
             const fullName = (firstName + ' ' + surname).trim() || 'Your Full Name';
             previewName.textContent = fullName;
 
-            // Job Title (we'll use a combination of current study or work)
             let title = 'Professional';
             if (state.work.length > 0 && state.work[0].jobTitle) {
                 title = state.work[0].jobTitle;
@@ -1497,7 +1484,6 @@
             }
             previewJobTitle.textContent = title;
 
-            // Contact
             const loc = addressEl.value.trim() || 'Location';
             const phone = contactEl.value.trim() || 'Phone';
             const email = emailEl.value.trim() || 'email@example.com';
@@ -1505,7 +1491,6 @@
             previewPhone.textContent = '📞 ' + phone;
             previewEmail.textContent = '✉️ ' + email;
 
-            // Photo
             if (state.photoBase64) {
                 previewPhotoWrap.innerHTML = `<img src="${state.photoBase64}" alt="Profile" />`;
             } else {
@@ -1567,7 +1552,6 @@
                 eduHtml += `</div>`;
             }
 
-            // Tertiary
             state.tertiary.forEach(t => {
                 if (!t.institution.trim() && !t.qualification.trim()) return;
                 eduHtml += `<div class="entry">
@@ -1619,7 +1603,6 @@
                 }
                 ncHtml += `</div>`;
                 previewNetcampusContent.innerHTML = ncHtml;
-                // Orange accent
                 netcampusHeading.className = 'netcampus-accent';
                 netcampusHeading.innerHTML = 'NetCampus <span class="netcampus-badge">Current</span>';
             } else {
@@ -1687,7 +1670,6 @@
         function validateForm() {
             let valid = true;
 
-            // Helper: mark field
             function validateField(el, condition) {
                 const group = el.closest('.form-group');
                 if (!condition) {
@@ -1699,7 +1681,6 @@
                 return condition;
             }
 
-            // Required: Full Name (we use firstName + surname)
             const fn = firstNameEl.value.trim();
             const sn = surnameEl.value.trim();
             const fnGroup = firstNameEl.closest('.form-group');
@@ -1717,10 +1698,9 @@
         }
 
         // ============================================================
-        // 13. PDF DOWNLOAD (FIXED)
+        // 13. PDF DOWNLOAD (FIXED with html2canvas + jsPDF)
         // ============================================================
         downloadBtn.addEventListener('click', function() {
-            // Validate
             if (!validateForm()) {
                 showToast('Please fill in all required fields (*).', 'error', 5000);
                 const firstInvalid = document.querySelector('.form-group.invalid');
@@ -1732,59 +1712,69 @@
                 return;
             }
 
-            // Ensure preview is up-to-date
+            // Update preview to ensure latest data
             updatePreview();
 
-            // Disable button during generation
+            // Disable button
             this.disabled = true;
             this.innerHTML = '<span class="spinner"></span> Generating PDF...';
 
             const previewEl = document.getElementById('cvPreview');
 
-            // Options for html2pdf
-            const opt = {
-                margin:        [10, 10, 10, 10], // top, right, bottom, left (mm)
-                filename:      'CV_Netcampus.pdf',
-                image:         { type: 'jpeg', quality: 0.98 },
-                html2canvas:   {
-                    scale:          1.8,          // higher resolution
-                    useCORS:        true,
-                    letterRendering: true,
-                    scrollY:        0,
-                    windowWidth:    previewEl.scrollWidth,
-                },
-                jsPDF:         {
-                    unit:          'mm',
-                    format:        'a4',
-                    orientation:   'portrait'
-                },
-                pagebreak:     { mode: ['avoid-all', 'css', 'legacy'] }
-            };
+            // Use html2canvas to capture the preview element
+            html2canvas(previewEl, {
+                scale: 2, // high resolution
+                useCORS: true,
+                allowTaint: false,
+                logging: false,
+                letterRendering: true,
+                scrollY: 0,
+                windowWidth: previewEl.scrollWidth,
+                width: previewEl.scrollWidth,
+                height: previewEl.scrollHeight,
+                onclone: function(doc) {
+                    // Ensure all images are loaded
+                    const imgs = doc.querySelectorAll('img');
+                    return Promise.all(Array.from(imgs).map(img => {
+                        if (img.complete) return Promise.resolve();
+                        return new Promise((resolve) => {
+                            img.onload = resolve;
+                            img.onerror = resolve;
+                        });
+                    }));
+                }
+            }).then(canvas => {
+                // Convert canvas to image
+                const imgData = canvas.toDataURL('image/jpeg', 0.95);
 
-            // Use the live element directly — html2pdf will capture it as-is
-            html2pdf()
-                .set(opt)
-                .from(previewEl)
-                .save()
-                .then(() => {
-                    downloadBtn.disabled = false;
-                    downloadBtn.innerHTML = '⬇️ Download PDF';
-                    showToast('PDF downloaded successfully!', 'success');
-                })
-                .catch(err => {
-                    console.error('PDF error:', err);
-                    downloadBtn.disabled = false;
-                    downloadBtn.innerHTML = '⬇️ Download PDF';
-                    showToast('Error generating PDF. Please try again.', 'error');
-                });
+                // Create PDF with jsPDF
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+                // Add image to fit A4 page
+                pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+
+                // Save
+                pdf.save('CV_Netcampus.pdf');
+
+                downloadBtn.disabled = false;
+                downloadBtn.innerHTML = '⬇️ Download PDF';
+                showToast('PDF downloaded successfully!', 'success');
+            }).catch(err => {
+                console.error('PDF generation error:', err);
+                downloadBtn.disabled = false;
+                downloadBtn.innerHTML = '⬇️ Download PDF';
+                showToast('Error generating PDF. Please try again.', 'error');
+            });
         });
 
         // ============================================================
-        // 14. RESET PREVIEW (just reloads preview state)
+        // 14. RESET PREVIEW
         // ============================================================
         resetBtn.addEventListener('click', function() {
             // Reset all form fields to default
-            // Personal
             firstNameEl.value = '';
             surnameEl.value = '';
             fullNameEl.value = '';
@@ -1837,9 +1827,7 @@
             renderReferences();
             updatePreview();
 
-            // Remove invalid states
             document.querySelectorAll('.form-group.invalid').forEach(g => g.classList.remove('invalid'));
-
             showToast('Preview reset to defaults.', 'info');
         });
 
@@ -1847,10 +1835,8 @@
         // 15. INIT
         // ============================================================
         function init() {
-            // Set default date of birth to 2000-01-01
             if (!dobEl.value) dobEl.value = '2000-01-01';
 
-            // Initialize repeaters
             state.tertiary = [createTertiaryItem()];
             state.work = [createWorkItem()];
             state.references = [
